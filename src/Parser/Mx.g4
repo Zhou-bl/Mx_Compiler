@@ -13,7 +13,7 @@ statement
     : block                                                                                                                                 #codeBlock
     | ifStmt                                                                                                                                #ifStatement
     | WHILE '(' condition=expression ')' loopBody=statement                                                                                 #whileStatement
-    | FOR '(' (initDecl=variableDecl | initExpr=expression)? ';' condition=expression? ';' incrExp=expression? ')' loopBody=statement       #forStatement
+    | FOR '(' (initDecl=variableDecl | initExpr=expression)? ';' condition=expression? ';' incrExpr=expression? ')' loopBody=statement      #forStatement
     | jumpStmt                                                                                                                              #jumpStatement
     | expression ';'                                                                                                                        #exprStatement
     | variableDecl ';'                                                                                                                      #variableDeclStatement
@@ -54,7 +54,7 @@ allocFormat
     | baseType ('(' ')')?                                               #allocBaseType
     ;
 
-ifStmt : IF '(' condition=expression ')' thenStatement=statement (ELSE elseStament=statement)?;
+ifStmt : IF '(' condition=expression ')' thenStatement=statement (ELSE elseStatement=statement)?;
 
 jumpStmt
     : RETURN expression? ';'    #returnStatement

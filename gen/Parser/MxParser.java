@@ -360,7 +360,7 @@ public class MxParser extends Parser {
 		public VariableDeclContext initDecl;
 		public ExpressionContext initExpr;
 		public ExpressionContext condition;
-		public ExpressionContext incrExp;
+		public ExpressionContext incrExpr;
 		public StatementContext loopBody;
 		public TerminalNode FOR() { return getToken(MxParser.FOR, 0); }
 		public StatementContext statement() {
@@ -513,7 +513,7 @@ public class MxParser extends Parser {
 				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__1) | (1L << T__7) | (1L << T__8) | (1L << T__9) | (1L << T__10) | (1L << T__14) | (1L << T__15) | (1L << LAMBDAS1) | (1L << NEW) | (1L << THIS) | (1L << NULL_CONSTANT) | (1L << BOOL_CONSTANT) | (1L << INTERGER_CONSTANT) | (1L << STRING_CONSTANT) | (1L << IDENTIFIER))) != 0)) {
 					{
 					setState(70);
-					((ForStatementContext)_localctx).incrExp = expression(0);
+					((ForStatementContext)_localctx).incrExpr = expression(0);
 					}
 				}
 
@@ -1601,7 +1601,7 @@ public class MxParser extends Parser {
 	public static class IfStmtContext extends ParserRuleContext {
 		public ExpressionContext condition;
 		public StatementContext thenStatement;
-		public StatementContext elseStament;
+		public StatementContext elseStatement;
 		public TerminalNode IF() { return getToken(MxParser.IF, 0); }
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
@@ -1656,7 +1656,7 @@ public class MxParser extends Parser {
 				setState(227);
 				match(ELSE);
 				setState(228);
-				((IfStmtContext)_localctx).elseStament = statement();
+				((IfStmtContext)_localctx).elseStatement = statement();
 				}
 				break;
 			}
