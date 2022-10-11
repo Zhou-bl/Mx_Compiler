@@ -4,8 +4,6 @@ import Parser.MxBaseVisitor;
 import Parser.MxParser;
 import Utils.Position;
 import Utils.SyntaxError;
-import org.antlr.v4.runtime.Parser;
-import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.ArrayList;
@@ -199,6 +197,163 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
         return new ForStmtNode(initDecl, initExpr, forCondition, incrExpr, loopBody,_pos);
     }
 
+    @Override
+    public ASTNode visitJumpStatement(MxParser.JumpStatementContext ctx){
+        return visit(ctx.jumpStmt());
+    }
+
+    /*
+    jumpStmt
+    : RETURN expression? ';'    #returnStatement
+    | BREAK ';'                 #breakStatement
+    | CONTINUE ';'              #continueStatement
+    ;
+     */
+    @Override
+    public ASTNode visitReturnStatement(MxParser.ReturnStatementContext ctx){
+        Position _pos = new Position(ctx);
+        ExprNode resValue;
+        if(ctx.expression() == null) resValue = null;
+        else resValue = (ExprNode) visit(ctx.expression());
+        return new ReturnStmtNode(resValue, _pos);
+    }
+
+    @Override
+    public ASTNode visitBreakStatement(MxParser.BreakStatementContext ctx){
+        Position _pos = new Position(ctx);
+        return new BreakStmtNode(_pos);
+    }
+
+    @Override
+    public ASTNode visitContinueStatement(MxParser.ContinueStatementContext ctx){
+        Position _pos = new Position(ctx);
+        return new ContinueStmtNode(_pos);
+    }
+
+    @Override
+    public ASTNode visitExprStatement(MxParser.ExprStatementContext ctx){
+        /*
+        expression ';'   #exprStatement
+         */
+        Position _pos = new Position(ctx);
+        ExprNode expr = (ExprNode) visit(ctx.expression());
+        return new ExprStmtNode(expr, _pos);
+    }
+
+    @Override
+    public ASTNode visitVariableDeclStatement(MxParser.VariableDeclStatementContext ctx){
+        return visit(ctx.variableDecl());
+    }
+
+    //There is no need for BlankStatement.
+
+    @Override
+    public ASTNode visitIdentifier(MxParser.IdentifierContext ctx){
+        Position _pos = new Position(ctx);
+        String _id = ctx.IDENTIFIER().getText();
+        return new IdentifierExprNode(_id, _pos);
+    }
+
+    @Override
+    public ASTNode visitConstant(MxParser.ConstantContext ctx){
+        return visit(ctx.constantValue());
+    }
+
+    @Override
+    public ASTNode visitConstantValue(MxParser.ConstantValueContext ctx){
+        Position _pos = new Position(ctx);
+        if(ctx.BOOL_CONSTANT() != null){
+            boolean value = ctx.BOOL_CONSTANT().getText().equals("true");
+            return new BoolConstantExprNode(value, _pos);
+        }
+        if(ctx.INTERGER_CONSTANT() != null){
+            int value = Integer.parseInt(ctx.INTERGER_CONSTANT().getText());
+            return new IntConstantExprNode(value, _pos);
+        }
+        if(ctx.STRING_CONSTANT() != null){
+            String value = ctx.STRING_CONSTANT().getText();
+            return new StringConstantExprNode(value, _pos);
+        }
+        if(ctx.NULL_CONSTANT() != null){
+            return new NullExprNode(_pos);
+        }
+        throw new RuntimeException("[Error] Unexpected constantValue!");
+    }
+
+    @Override
+    public ASTNode visitObjPortion(MxParser.ObjPortionContext ctx){
+        // expression DOT IDENTIFIER
+        Position _pos = new Position(ctx);
+        ExprNode _expr = (ExprNode) visit(ctx.expression());
+        String _mem = ctx.IDENTIFIER().getText();
+        return new ObjectPortionExprNode(_expr, _mem, _pos);
+    }
+
+    @Override
+    public ASTNode visitAllocExpr(MxParser.AllocExprContext ctx){
+        return visit(ctx.allocFormat());
+    }
+
+    @Override
+    public ASTNode visitAllocErrorType(MxParser.AllocErrorTypeContext ctx){
+        Position _pos = new Position(ctx);
+        throw new SyntaxError("Alloc Format error occur.", _pos);
+    }
+
+    @Override
+    public ASTNode visitAllocArrayType(MxParser.AllocArrayTypeContext ctx){
+        Position _pos = new Position(ctx);
+        ArrayList<ExprNode> _dimList = new ArrayList<>();
+        for(MxParser.ExpressionContext _tmp : ctx.expression()){
+            _dimList.add((ExprNode) visit(_tmp));
+        }
+        int _dimSize = (ctx.getChildCount() - 1 - _dimList.size()) / 2;
+        TypeNode _allocType = (TypeNode) visit(ctx.baseType());
+        return new AllocExprNode(_allocType, _dimSize, _dimList, _pos);
+    }
+
+    @Override
+    public ASTNode visitAllocBaseType(MxParser.AllocBaseTypeContext ctx){
+        Position _pos = new Position(ctx);
+        TypeNode _allocType = (TypeNode) visit(ctx.baseType());
+        return new AllocExprNode(_allocType, 0, null, _pos);
+    }
+
+    @Override
+    public ASTNode visitFunctionCall(MxParser.FunctionCallContext ctx){
+        Position _pos = new Position(ctx);
+        ExprNode _func = (ExprNode) visit(ctx.expression());
+        ArrayList<ExprNode> _paraList = new ArrayList<>();
+        if(ctx.parameterListForCall() == null) _paraList = null;
+        else{
+            for(MxParser.ExpressionContext _tmp : ctx.parameterListForCall().expression()){
+                _paraList.add((ExprNode) visit(_tmp));
+            }
+        }
+        return new FuncCallExprNode(_func, _paraList, _pos);
+    }
+
+    @Override
+    public ASTNode visitCompoundExpr(MxParser.CompoundExprContext ctx){
+        return visit(ctx.expression());
+    }
+
+    @Override
+    public ASTNode visitArrayAccess(MxParser.ArrayAccessContext ctx){
+        Position _pos = new Position(ctx);
+        ExprNode _array = (ExprNode) visit(ctx.array);
+        ExprNode _index = (ExprNode) visit(ctx.index);
+        return new ArrayAccessNode(_array, _index, _pos);
+    }
+
+    @Override
+    public ASTNode visitAftermonocularOp(MxParser.AftermonocularOpContext ctx){
+        Position _pos = new Position(ctx);
+        MonocularOpExprNode.MonocularOpType _op = ctx.op.getText().equals("++") ?
+                MonocularOpExprNode.MonocularOpType.SINC_AFT : MonocularOpExprNode.MonocularOpType.SDER_AFT;
+        ExprNode _operand = (ExprNode) visit(ctx.operand);
+        return new MonocularOpExprNode(_operand, _op, _pos);
+    }
     @Override
     public ASTNode visitBaseType(MxParser.BaseTypeContext ctx){
         //todo

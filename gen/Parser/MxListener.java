@@ -134,18 +134,6 @@ public interface MxListener extends ParseTreeListener {
 	 */
 	void exitBlock(MxParser.BlockContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code allocExp}
-	 * labeled alternative in {@link MxParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void enterAllocExp(MxParser.AllocExpContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code allocExp}
-	 * labeled alternative in {@link MxParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void exitAllocExp(MxParser.AllocExpContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code objPortion}
 	 * labeled alternative in {@link MxParser#expression}.
 	 * @param ctx the parse tree
@@ -194,29 +182,41 @@ public interface MxListener extends ParseTreeListener {
 	 */
 	void exitConstant(MxParser.ConstantContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code compoundExp}
+	 * Enter a parse tree produced by the {@code compoundExpr}
 	 * labeled alternative in {@link MxParser#expression}.
 	 * @param ctx the parse tree
 	 */
-	void enterCompoundExp(MxParser.CompoundExpContext ctx);
+	void enterCompoundExpr(MxParser.CompoundExprContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code compoundExp}
+	 * Exit a parse tree produced by the {@code compoundExpr}
 	 * labeled alternative in {@link MxParser#expression}.
 	 * @param ctx the parse tree
 	 */
-	void exitCompoundExp(MxParser.CompoundExpContext ctx);
+	void exitCompoundExpr(MxParser.CompoundExprContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code lambdaExp}
+	 * Enter a parse tree produced by the {@code lambdaExpr}
 	 * labeled alternative in {@link MxParser#expression}.
 	 * @param ctx the parse tree
 	 */
-	void enterLambdaExp(MxParser.LambdaExpContext ctx);
+	void enterLambdaExpr(MxParser.LambdaExprContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code lambdaExp}
+	 * Exit a parse tree produced by the {@code lambdaExpr}
 	 * labeled alternative in {@link MxParser#expression}.
 	 * @param ctx the parse tree
 	 */
-	void exitLambdaExp(MxParser.LambdaExpContext ctx);
+	void exitLambdaExpr(MxParser.LambdaExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code allocExpr}
+	 * labeled alternative in {@link MxParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterAllocExpr(MxParser.AllocExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code allocExpr}
+	 * labeled alternative in {@link MxParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitAllocExpr(MxParser.AllocExprContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code functionCall}
 	 * labeled alternative in {@link MxParser#expression}.

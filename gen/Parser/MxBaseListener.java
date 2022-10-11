@@ -148,18 +148,6 @@ public class MxBaseListener implements MxListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterAllocExp(MxParser.AllocExpContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitAllocExp(MxParser.AllocExpContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterObjPortion(MxParser.ObjPortionContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -208,25 +196,37 @@ public class MxBaseListener implements MxListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterCompoundExp(MxParser.CompoundExpContext ctx) { }
+	@Override public void enterCompoundExpr(MxParser.CompoundExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitCompoundExp(MxParser.CompoundExpContext ctx) { }
+	@Override public void exitCompoundExpr(MxParser.CompoundExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLambdaExp(MxParser.LambdaExpContext ctx) { }
+	@Override public void enterLambdaExpr(MxParser.LambdaExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLambdaExp(MxParser.LambdaExpContext ctx) { }
+	@Override public void exitLambdaExpr(MxParser.LambdaExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAllocExpr(MxParser.AllocExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAllocExpr(MxParser.AllocExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

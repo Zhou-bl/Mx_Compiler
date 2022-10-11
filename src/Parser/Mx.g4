@@ -26,11 +26,11 @@ expression
     : IDENTIFIER                                                                    #identifier
     | constantValue                                                                 #constant
     | expression DOT IDENTIFIER                                                     #objPortion
-    | NEW allocFormat                                                               #allocExp
+    | NEW allocFormat                                                               #allocExpr
     | expression '(' parameterListForCall? ')'                                      #functionCall
-    | '(' expression ')'                                                            #compoundExp
+    | '(' expression ')'                                                            #compoundExpr
     | array=expression '[' index=expression ']'                                     #arrayAccess
-    | operand=expression op=('++'|'--')                                             #aftermonocularOp//后缀单目运算符
+    | operand=expression op=('++'|'--')                                             #aftermonocularOp//后缀单目运算符具有更高优先级
     | <assoc=right> op=('!'|'~'|'++'|'--') operand=expression                       #monocularOp
     | operand1=expression op=('*'|'/'|'%') operand2=expression                      #binaryExpr
     | operand1=expression op=('+'|'-') operand2=expression                          #binaryExpr
@@ -45,7 +45,7 @@ expression
     | operand1=expression op='||' operand2=expression                               #binaryExpr
     | <assoc=right> operand1=expression op='=' operand2=expression                  #binaryExpr
     | THIS                                                                          #objPointer
-    | LAMBDAS1 lambdaParameterList? LAMBDAS2 block '(' parameterListForCall? ')'    #lambdaExp
+    | LAMBDAS1 lambdaParameterList? LAMBDAS2 block '(' parameterListForCall? ')'    #lambdaExpr
     ;
 
 allocFormat

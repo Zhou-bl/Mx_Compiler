@@ -85,13 +85,6 @@ public interface MxVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitBlock(MxParser.BlockContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code allocExp}
-	 * labeled alternative in {@link MxParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitAllocExp(MxParser.AllocExpContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code objPortion}
 	 * labeled alternative in {@link MxParser#expression}.
 	 * @param ctx the parse tree
@@ -120,19 +113,26 @@ public interface MxVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitConstant(MxParser.ConstantContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code compoundExp}
+	 * Visit a parse tree produced by the {@code compoundExpr}
 	 * labeled alternative in {@link MxParser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitCompoundExp(MxParser.CompoundExpContext ctx);
+	T visitCompoundExpr(MxParser.CompoundExprContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code lambdaExp}
+	 * Visit a parse tree produced by the {@code lambdaExpr}
 	 * labeled alternative in {@link MxParser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitLambdaExp(MxParser.LambdaExpContext ctx);
+	T visitLambdaExpr(MxParser.LambdaExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code allocExpr}
+	 * labeled alternative in {@link MxParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAllocExpr(MxParser.AllocExprContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code functionCall}
 	 * labeled alternative in {@link MxParser#expression}.

@@ -647,26 +647,6 @@ public class MxParser extends Parser {
 			super.copyFrom(ctx);
 		}
 	}
-	public static class AllocExpContext extends ExpressionContext {
-		public TerminalNode NEW() { return getToken(MxParser.NEW, 0); }
-		public AllocFormatContext allocFormat() {
-			return getRuleContext(AllocFormatContext.class,0);
-		}
-		public AllocExpContext(ExpressionContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MxListener ) ((MxListener)listener).enterAllocExp(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MxListener ) ((MxListener)listener).exitAllocExp(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MxVisitor ) return ((MxVisitor<? extends T>)visitor).visitAllocExp(this);
-			else return visitor.visitChildren(this);
-		}
-	}
 	public static class ObjPortionContext extends ExpressionContext {
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
@@ -745,26 +725,26 @@ public class MxParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
-	public static class CompoundExpContext extends ExpressionContext {
+	public static class CompoundExprContext extends ExpressionContext {
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
 		}
-		public CompoundExpContext(ExpressionContext ctx) { copyFrom(ctx); }
+		public CompoundExprContext(ExpressionContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MxListener ) ((MxListener)listener).enterCompoundExp(this);
+			if ( listener instanceof MxListener ) ((MxListener)listener).enterCompoundExpr(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MxListener ) ((MxListener)listener).exitCompoundExp(this);
+			if ( listener instanceof MxListener ) ((MxListener)listener).exitCompoundExpr(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MxVisitor ) return ((MxVisitor<? extends T>)visitor).visitCompoundExp(this);
+			if ( visitor instanceof MxVisitor ) return ((MxVisitor<? extends T>)visitor).visitCompoundExpr(this);
 			else return visitor.visitChildren(this);
 		}
 	}
-	public static class LambdaExpContext extends ExpressionContext {
+	public static class LambdaExprContext extends ExpressionContext {
 		public TerminalNode LAMBDAS1() { return getToken(MxParser.LAMBDAS1, 0); }
 		public TerminalNode LAMBDAS2() { return getToken(MxParser.LAMBDAS2, 0); }
 		public BlockContext block() {
@@ -776,18 +756,38 @@ public class MxParser extends Parser {
 		public ParameterListForCallContext parameterListForCall() {
 			return getRuleContext(ParameterListForCallContext.class,0);
 		}
-		public LambdaExpContext(ExpressionContext ctx) { copyFrom(ctx); }
+		public LambdaExprContext(ExpressionContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof MxListener ) ((MxListener)listener).enterLambdaExp(this);
+			if ( listener instanceof MxListener ) ((MxListener)listener).enterLambdaExpr(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof MxListener ) ((MxListener)listener).exitLambdaExp(this);
+			if ( listener instanceof MxListener ) ((MxListener)listener).exitLambdaExpr(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof MxVisitor ) return ((MxVisitor<? extends T>)visitor).visitLambdaExp(this);
+			if ( visitor instanceof MxVisitor ) return ((MxVisitor<? extends T>)visitor).visitLambdaExpr(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class AllocExprContext extends ExpressionContext {
+		public TerminalNode NEW() { return getToken(MxParser.NEW, 0); }
+		public AllocFormatContext allocFormat() {
+			return getRuleContext(AllocFormatContext.class,0);
+		}
+		public AllocExprContext(ExpressionContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof MxListener ) ((MxListener)listener).enterAllocExpr(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof MxListener ) ((MxListener)listener).exitAllocExpr(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof MxVisitor ) return ((MxVisitor<? extends T>)visitor).visitAllocExpr(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -944,7 +944,7 @@ public class MxParser extends Parser {
 				break;
 			case NEW:
 				{
-				_localctx = new AllocExpContext(_localctx);
+				_localctx = new AllocExprContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
 				setState(97);
@@ -955,7 +955,7 @@ public class MxParser extends Parser {
 				break;
 			case T__1:
 				{
-				_localctx = new CompoundExpContext(_localctx);
+				_localctx = new CompoundExprContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
 				setState(99);
@@ -1021,7 +1021,7 @@ public class MxParser extends Parser {
 				break;
 			case LAMBDAS1:
 				{
-				_localctx = new LambdaExpContext(_localctx);
+				_localctx = new LambdaExprContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
 				setState(108);
