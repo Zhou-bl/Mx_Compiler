@@ -4,6 +4,7 @@ import Parser.MxBaseVisitor;
 import Parser.MxParser;
 import Utils.Position;
 import Utils.SyntaxError;
+import org.antlr.v4.codegen.model.chunk.TokenPropertyRef_pos;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.ArrayList;
@@ -354,8 +355,107 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
         ExprNode _operand = (ExprNode) visit(ctx.operand);
         return new MonocularOpExprNode(_operand, _op, _pos);
     }
+
+    @Override
+    public ASTNode visitMonocularOp(MxParser.MonocularOpContext ctx){
+        Position _pos = new Position(ctx);
+        String _opString = ctx.op.getText();
+        ExprNode _operand = (ExprNode) visit(ctx.operand);
+        MonocularOpExprNode.MonocularOpType _op = switch (_opString){
+            case "++" -> MonocularOpExprNode.MonocularOpType.SINC;
+            case "--" -> MonocularOpExprNode.MonocularOpType.SDER;
+            case "!" -> MonocularOpExprNode.MonocularOpType.LOGIC_NOT;
+            case "~" -> MonocularOpExprNode.MonocularOpType.BIT_NOT;
+            case "+" -> MonocularOpExprNode.MonocularOpType.POS;
+            case "-" -> MonocularOpExprNode.MonocularOpType.NEG;
+            default -> throw new SyntaxError("Unexpected monocular operator symbol.", new Position(ctx.op));
+        };
+        return new MonocularOpExprNode(_operand, _op, _pos);
+    }
+
+    @Override
+    public ASTNode visitBinaryExpr(MxParser.BinaryExprContext ctx){
+        Position _pos = new Position(ctx);
+        String _opString = ctx.op.getText();
+        ExprNode _operand1 = (ExprNode) visit(ctx.operand1);
+        ExprNode _operand2 = (ExprNode) visit(ctx.operand2);
+        //+, -, *, /, %, <<, >>, >, <, >=, <=, ==, !=, &&, ||, ^, &, |, =;
+        //ADD, SUB, MUL, DIV, MOD, SHL, SHR, GT, LT, GE, LE, EQ, NE, AND, OR, XOR, LAND, LOR, ASSIGN
+        BinaryExprNode.BinaryOpType _op = switch (_opString) {
+            case "+" -> BinaryExprNode.BinaryOpType.ADD;
+            case "-" -> BinaryExprNode.BinaryOpType.SUB;
+            case "*" -> BinaryExprNode.BinaryOpType.MUL;
+            case "/" -> BinaryExprNode.BinaryOpType.DIV;
+            case "%" -> BinaryExprNode.BinaryOpType.MOD;
+            case "<<" -> BinaryExprNode.BinaryOpType.SHL;
+            case ">>" -> BinaryExprNode.BinaryOpType.SHR;
+            case ">" -> BinaryExprNode.BinaryOpType.GT;
+            case "<" -> BinaryExprNode.BinaryOpType.LT;
+            case ">=" -> BinaryExprNode.BinaryOpType.GE;
+            case "<=" -> BinaryExprNode.BinaryOpType.LE;
+            case "==" -> BinaryExprNode.BinaryOpType.EQ;
+            case "!=" -> BinaryExprNode.BinaryOpType.NE;
+            case "&&" -> BinaryExprNode.BinaryOpType.AND;
+            case "||" -> BinaryExprNode.BinaryOpType.OR;
+            case "^" -> BinaryExprNode.BinaryOpType.XOR;
+            case "&" -> BinaryExprNode.BinaryOpType.LAND;
+            case "|" -> BinaryExprNode.BinaryOpType.LOR;
+            case "=" -> BinaryExprNode.BinaryOpType.ASSIGN;
+            default -> throw new SyntaxError("Unexpected binary operator symbol.", new Position(ctx.op));
+        };
+        return new BinaryExprNode(_op, _operand1, _operand2, _pos);
+    }
+
+    @Override
+    public ASTNode visitObjPointer(MxParser.ObjPointerContext ctx){
+        Position _pos = new Position(ctx);
+        return new ThisExprNode(_pos);
+    }
+
+    @Override
+    public ASTNode visitLambdaExpr(MxParser.LambdaExprContext ctx){
+        //LAMBDAS1 lambdaParameterList? LAMBDAS2 block '(' parameterListForCall? ')'
+        Position _pos = new Position(ctx);
+        ArrayList<VarDefNode> _parameter = null;
+        if(ctx.lambdaParameterList() != null && ctx.lambdaParameterList().parameterList() != null){
+            _parameter = new ArrayList<>();
+            List<MxParser.VariableTypeContext> _parameterTypeList = ctx.lambdaParameterList().parameterList().variableType();
+            List<TerminalNode> _parameterID = ctx.lambdaParameterList().parameterList().IDENTIFIER();
+            for(int i = 0; i < _parameterTypeList.size(); ++i){
+                _parameter.add(new VarDefNode((TypeNode) visit(_parameterTypeList.get(i)), _parameterID.get(i).getText(), null, new Position(_parameterTypeList.get(i))));
+            }
+        }
+        ArrayList<ExprNode> _list = null;
+        if(ctx.parameterListForCall() != null){
+            _list = new ArrayList<>();
+            for(MxParser.ExpressionContext _tmp : ctx.parameterListForCall().expression()){
+                _list.add((ExprNode) visit(_tmp));
+            }
+        }
+        return new LambdaExprNode(_parameter, _list, (BlockStmtNode) visit(ctx.block()), _pos);
+    }
     @Override
     public ASTNode visitBaseType(MxParser.BaseTypeContext ctx){
-        //todo
+        Position _pos = new Position(ctx);
+        return new ClassTypeNode(ctx.getText(), _pos);
+    }
+
+    @Override
+    public ASTNode visitBaseVariableType(MxParser.BaseVariableTypeContext ctx){
+        Position _pos = new Position(ctx);
+        return visit(ctx.baseType());
+    }
+
+    @Override
+    public ASTNode visitArrayType(MxParser.ArrayTypeContext ctx){
+        Position _pos = new Position(ctx);
+        return new ArrayTypeNode((TypeNode) visit(ctx.variableType()), _pos);
+    }
+
+    @Override
+    public ASTNode visitFunctionType(MxParser.FunctionTypeContext ctx){
+        Position _pos = new Position(ctx);
+        if(ctx.VOID() == null) return visit(ctx.variableType());
+        else return new VoidTypeNode(_pos);
     }
 }
