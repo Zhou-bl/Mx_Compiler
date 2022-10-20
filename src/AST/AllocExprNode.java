@@ -29,4 +29,9 @@ public class AllocExprNode extends ExprNode {
     public boolean isArray(){
         return this.dimSize > 0;
     }
+
+    @Override
+    public void accept(ASTVisitor visitor) {
+        visitor.visit(this);
+    }
 }

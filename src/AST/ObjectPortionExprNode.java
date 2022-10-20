@@ -21,4 +21,8 @@ public class ObjectPortionExprNode extends ExprNode {
         forFunc = false;
         funcInfo = null;
     }
+    @Override
+    public void accept(ASTVisitor visitor) {
+        visitor.visit(this);
+    }
 }

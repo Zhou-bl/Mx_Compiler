@@ -15,4 +15,8 @@ public class BlockStmtNode extends StmtNode{
         super(_pos);
         this.stmtList = _list;
     }
+    @Override
+    public void accept(ASTVisitor visitor) {
+        visitor.visit(this);
+    }
 }

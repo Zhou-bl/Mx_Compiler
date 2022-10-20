@@ -16,4 +16,8 @@ public class VarDefStmtNode extends StmtNode{
         this.varType = _type;
         this.baseDecl = _base;
     }
+    @Override
+    public void accept(ASTVisitor visitor) {
+        visitor.visit(this);
+    }
 }

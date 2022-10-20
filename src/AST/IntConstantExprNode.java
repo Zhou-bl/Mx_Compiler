@@ -14,4 +14,8 @@ public class IntConstantExprNode extends ExprNode{
     public int getValue(){
         return this.value;
     }
+    @Override
+    public void accept(ASTVisitor visitor) {
+        visitor.visit(this);
+    }
 }

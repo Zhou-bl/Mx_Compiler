@@ -16,4 +16,8 @@ public class FuncCallExprNode extends ExprNode{
         this.func = _func;
         this.parameterListForCall = _parameter;
     }
+    @Override
+    public void accept(ASTVisitor visitor) {
+        visitor.visit(this);
+    }
 }

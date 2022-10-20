@@ -25,4 +25,8 @@ public class LambdaExprNode extends ExprNode {
         this.funcBody = _body;
         this.parameterForCall = _para;
     }
+    @Override
+    public void accept(ASTVisitor visitor) {
+        visitor.visit(this);
+    }
 }

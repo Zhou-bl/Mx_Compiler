@@ -21,4 +21,8 @@ public class ArrayTypeNode extends TypeNode {
         super(_baseTypeID, _pos);
         this.dimSize = _dim;
     }
+    @Override
+    public void accept(ASTVisitor visitor) {
+        visitor.visit(this);
+    }
 }

@@ -9,4 +9,8 @@ public class RootNode extends ASTNode{
         super(_pos);
         this.elements = _ele;
     }
+    @Override
+    public void accept(ASTVisitor visitor) {
+        visitor.visit(this);
+    }
 }

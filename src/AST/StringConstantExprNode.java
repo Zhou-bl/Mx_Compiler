@@ -15,4 +15,8 @@ public class StringConstantExprNode extends ExprNode{
     public String getValue(){
         return this.value;
     }
+    @Override
+    public void accept(ASTVisitor visitor) {
+        visitor.visit(this);
+    }
 }

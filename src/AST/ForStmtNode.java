@@ -20,4 +20,8 @@ public class ForStmtNode extends StmtNode{
         this.incrExpr = _incr;
         this.loopBody = _body;
     }
+    @Override
+    public void accept(ASTVisitor visitor) {
+        visitor.visit(this);
+    }
 }

@@ -7,4 +7,8 @@ public class ClassTypeNode extends TypeNode{
     public ClassTypeNode(String _classID, Position _pos){
         super(_classID, _pos);
     }
+    @Override
+    public void accept(ASTVisitor visitor) {
+        visitor.visit(this);
+    }
 }

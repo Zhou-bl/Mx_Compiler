@@ -13,4 +13,8 @@ public class MonocularOpExprNode extends ExprNode{
         this.opSymbol = _op;
         this.operand = _operand;
     }
+    @Override
+    public void accept(ASTVisitor visitor) {
+        visitor.visit(this);
+    }
 }

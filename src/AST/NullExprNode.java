@@ -7,4 +7,8 @@ public class NullExprNode extends ExprNode {
         super(_pos);
         this.exprType = new ClassTypeNode("null", _pos);
     }
+    @Override
+    public void accept(ASTVisitor visitor) {
+        visitor.visit(this);
+    }
 }
