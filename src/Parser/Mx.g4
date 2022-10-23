@@ -28,7 +28,7 @@ expression
     | expression DOT IDENTIFIER                                                     #objPortion
     | NEW allocFormat                                                               #allocExpr
     | expression '(' parameterListForCall? ')'                                      #functionCall
-    | '(' expression ')'                                                            #compoundExpr
+    | '(' expression ')'                                                            #compoundExpr//只用来提高优先级
     | array=expression '[' index=expression ']'                                     #arrayAccess
     | operand=expression op=('++'|'--')                                             #aftermonocularOp//后缀单目运算符具有更高优先级
     | <assoc=right> op=('!'|'~'|'++'|'--') operand=expression                       #monocularOp

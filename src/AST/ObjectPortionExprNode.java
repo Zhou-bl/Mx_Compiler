@@ -9,8 +9,7 @@ public class ObjectPortionExprNode extends ExprNode {
     public ExprNode baseObject;
     public String member;
 
-    //TODO: I don't understand what the following member for.
-    public boolean forFunc;
+    public boolean forFunc;//判断调用的是否为成员函数还是成员变量;
     public FuncDefNode funcInfo;
 
     public ObjectPortionExprNode(ExprNode _base, String _member, Position _pos){

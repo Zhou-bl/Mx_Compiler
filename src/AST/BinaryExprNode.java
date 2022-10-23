@@ -5,7 +5,7 @@ import Utils.Position;
 public class BinaryExprNode extends ExprNode {
     //+, -, *, /, %, <<, >>, >, <, >=, <=, ==, !=, &&, ||, ^, &, |, =;
     public enum BinaryOpType {ADD, SUB, MUL, DIV, MOD, SHL, SHR, GT, LT, GE, LE, EQ, NE, AND, OR, XOR, LAND, LOR, ASSIGN}
-    BinaryOpType opSymbol;
+    public BinaryOpType opSymbol;
     public ExprNode leftOperand;
     public ExprNode rightOperand;
 

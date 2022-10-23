@@ -177,13 +177,9 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
          */
         Position _pos = new Position(ctx);
 
-        VarDefStmtNode initDecl;
-        if(ctx.initDecl == null) initDecl = null;
-        else initDecl = (VarDefStmtNode) visit(ctx.initDecl);
-
-        ExprNode initExpr;
-        if(ctx.initExpr == null) initExpr = null;
-        else initExpr = (ExprNode) visit(ctx.initExpr);
+        StmtNode init = null;
+        if(ctx.initDecl != null) init = (StmtNode) visit(ctx.initDecl);
+        else if(ctx.initExpr != null) init = new ExprStmtNode((ExprNode) visit(ctx.initExpr),new Position(ctx.initExpr));
 
         ExprNode forCondition;
         if(ctx.condition == null) forCondition = null;
@@ -195,7 +191,7 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
 
         StmtNode loopBody = (StmtNode) visit(ctx.loopBody);
 
-        return new ForStmtNode(initDecl, initExpr, forCondition, incrExpr, loopBody,_pos);
+        return new ForStmtNode(init, forCondition, incrExpr, loopBody,_pos);
     }
 
     @Override
