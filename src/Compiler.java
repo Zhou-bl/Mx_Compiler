@@ -1,6 +1,6 @@
 import AST.ASTBuilder;
 import AST.RootNode;
-import FrontEnd.PreWork;
+import FrontEnd.SymbolCollector;
 import FrontEnd.SemChecker;
 import FrontEnd.SetBuiltIn;
 import Parser.MxLexer;
@@ -35,7 +35,7 @@ public class Compiler {
             globalScope = init.init(globalScope);
 
             //semantic check:
-            PreWork symbolCollector = new PreWork(globalScope);
+            SymbolCollector symbolCollector = new SymbolCollector(globalScope);
             symbolCollector.visit(ASTRoot);
             SemChecker semChecker = new SemChecker(globalScope);
             semChecker.visit(ASTRoot);
