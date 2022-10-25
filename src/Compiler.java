@@ -7,15 +7,13 @@ import Parser.MxLexer;
 import Parser.MxParser;
 import Utils.GlobalScope;
 import Utils.MxErrorListener;
-import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import java.io.IOException;
 import java.io.InputStream;
 
-public class Main {
+public class Compiler {
     public static void main(String[] args) throws Exception{
         InputStream input = System.in;
         try{
