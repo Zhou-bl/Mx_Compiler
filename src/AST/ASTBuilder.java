@@ -72,7 +72,6 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
         if(ctx.parameterList() == null) funcParameterList = null;
         else {
             funcParameterList = new ArrayList<>();
-            //ÕâÀïÖØĞÂ¸ÄĞ´g4ÎÄ¼şÖĞµÄparameterList²¿·Ö£¬Ê¹µÃÏÂÃæµÄ±éÀú¸ü·½±ã;
             List<MxParser.VariableTypeContext> varTypeAry = ctx.parameterList().variableType();
             List<TerminalNode> varIDAry = ctx.parameterList().IDENTIFIER();
             for(int i = 0; i < varTypeAry.size(); ++i){
@@ -127,7 +126,7 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
                     break;
                 }
             }
-            if(!isBlank){//ÓĞ·Ç¿ÕÓï¾ä
+            if(!isBlank){//ï¿½Ğ·Ç¿ï¿½ï¿½ï¿½ï¿½
                 stmtArt = new ArrayList<>();
                 for(MxParser.StatementContext _tmp : ctx.statement()){
                     if(!(_tmp instanceof MxParser.BlankStatementContext)){
