@@ -206,7 +206,7 @@ public class SemChecker implements ASTVisitor {
         if(FuncStation.peek() instanceof FuncDefNode){
             FuncDefNode curFunc = (FuncDefNode) FuncStation.peek();
             if(node.resValue == null){//return ;
-                if(!curFunc.functionType.isEqual(TypeVoid) && curFunc.functionType != null){
+                if(curFunc.functionType != null && !curFunc.functionType.isEqual(TypeVoid)){
                     throw new SemanticError("Invalid return value.", node.pos);
                 }
             }else{//构造函数不能有return value;
