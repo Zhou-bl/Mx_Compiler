@@ -391,11 +391,11 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
             case "<=" -> BinaryExprNode.BinaryOpType.LE;
             case "==" -> BinaryExprNode.BinaryOpType.EQ;
             case "!=" -> BinaryExprNode.BinaryOpType.NE;
-            case "&&" -> BinaryExprNode.BinaryOpType.AND;
-            case "||" -> BinaryExprNode.BinaryOpType.OR;
+            case "&&" -> BinaryExprNode.BinaryOpType.LAND;
+            case "||" -> BinaryExprNode.BinaryOpType.LOR;
             case "^" -> BinaryExprNode.BinaryOpType.XOR;
-            case "&" -> BinaryExprNode.BinaryOpType.LAND;
-            case "|" -> BinaryExprNode.BinaryOpType.LOR;
+            case "&" -> BinaryExprNode.BinaryOpType.AND;
+            case "|" -> BinaryExprNode.BinaryOpType.OR;
             case "=" -> BinaryExprNode.BinaryOpType.ASSIGN;
             default -> throw new SyntaxError("Unexpected binary operator symbol.", new Position(ctx.op));
         };

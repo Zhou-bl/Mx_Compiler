@@ -1,5 +1,7 @@
 import AST.ASTBuilder;
 import AST.RootNode;
+import FrontEnd.PreWork;
+import FrontEnd.SemChecker;
 import FrontEnd.SetBuiltIn;
 import Parser.MxLexer;
 import Parser.MxParser;
@@ -15,7 +17,6 @@ import java.io.InputStream;
 
 public class Main {
     public static void main(String[] args) throws Exception{
-        boolean SemanticFlag = false;
         InputStream input = System.in;
         try{
             MxLexer lexer = new MxLexer(CharStreams.fromStream(input));
@@ -36,7 +37,10 @@ public class Main {
             globalScope = init.init(globalScope);
 
             //semantic check:
-
+            PreWork symbolCollector = new PreWork(globalScope);
+            symbolCollector.visit(ASTRoot);
+            SemChecker semChecker = new SemChecker(globalScope);
+            semChecker.visit(ASTRoot);
 
         } catch (RuntimeException RuntimeError){
             System.err.println(RuntimeError.getMessage());

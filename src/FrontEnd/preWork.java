@@ -5,10 +5,10 @@ import Utils.GlobalScope;
 import Utils.Position;
 import Utils.SemanticError;
 
-public class preWork implements ASTVisitor {
+public class PreWork implements ASTVisitor {
     private final TypeNode TypeInt;
     GlobalScope globalScope;
-    public preWork(GlobalScope _globalScope){
+    public PreWork(GlobalScope _globalScope){
         this.globalScope = _globalScope;
         TypeInt = new ClassTypeNode("int", new Position(-1, -1));
     }

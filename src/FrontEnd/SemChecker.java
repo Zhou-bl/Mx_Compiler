@@ -94,13 +94,14 @@ public class SemChecker implements ASTVisitor {
         if(node.parameterList != null){
             node.parameterList.forEach(tmp -> tmp.accept(this));
         }
-        if(node.functionBody != null){
+        if(node.functionBody.stmtList != null){
             node.functionBody.stmtList.forEach(tmp -> tmp.accept(this));
         }
         if(node.functionType != null && !node.functionType.isEqual(TypeVoid) && !node.functionID.equals("main") && !node.hasReturn){
             throw new SemanticError("No return statement in no-void or main function", node.pos);
         }
         if(node.functionID.equals("main") && !node.hasReturn){
+            if(node.functionBody.stmtList == null) node.functionBody.stmtList = new ArrayList<>();
             node.functionBody.stmtList.add(new ReturnStmtNode(new IntConstantExprNode(0, new Position(-1, -1)), new Position(-1, -1)));
         }
         FuncStation.pop();
@@ -151,7 +152,7 @@ public class SemChecker implements ASTVisitor {
             throw new SemanticError("Condition in while statement can't be empty.", node.pos);
         }
         node.condition.accept(this);
-        if(node.condition.exprType.isEqual(TypeBool)){
+        if(!node.condition.exprType.isEqual(TypeBool)){
             throw new SemanticError("Condition in while statement isn't a bool value.", node.condition.pos);
         }
         if(node.loopBody != null) {
@@ -272,6 +273,7 @@ public class SemChecker implements ASTVisitor {
                 if(node.exprType == null){
                     throw new SemanticError("Class" + "\""+ node.baseObject.exprType.typeID +"\"" + "has no member named " + "\"" + node.member + "\"", node.pos);
                 }
+                node.isAssignment = true;
             }else{
                 node.funcInfo = globalScope.ClassTable.get(node.baseObject.exprType.typeID).getFunctionDef(node.member);
                 if(node.funcInfo == null){
@@ -326,6 +328,7 @@ public class SemChecker implements ASTVisitor {
                 }
             }
         }
+        //
         if(node.parameterListForCall != null){
             node.parameterListForCall.forEach(tmp -> tmp.accept(this));
         }
@@ -333,14 +336,16 @@ public class SemChecker implements ASTVisitor {
         if((node.parameterListForCall == null && funcBase.parameterList != null)
             || (node.parameterListForCall != null && funcBase.parameterList == null)){
             isWrong = true;
-        }else{
-            if(node.parameterListForCall.size() != funcBase.parameterList.size()) isWrong = true;
-            else{
-                for(int i = 0; i < node.parameterListForCall.size(); ++i){
-                    if(!funcBase.parameterList.get(i).variableType.isEqual(node.parameterListForCall.get(i).exprType)
-                        && !node.parameterListForCall.get(i).exprType.isEqual(TypeNull)){
-                        isWrong = true;
-                        break;
+        }else{//此时参数都为空或者都不为空;
+            if(node.parameterListForCall != null){
+                if(node.parameterListForCall.size() != funcBase.parameterList.size()) isWrong = true;
+                else{
+                    for(int i = 0; i < node.parameterListForCall.size(); ++i){
+                        if(!funcBase.parameterList.get(i).variableType.isEqual(node.parameterListForCall.get(i).exprType)
+                                && !node.parameterListForCall.get(i).exprType.isEqual(TypeNull)){
+                            isWrong = true;
+                            break;
+                        }
                     }
                 }
             }
@@ -454,7 +459,7 @@ public class SemChecker implements ASTVisitor {
                         || node.rightOperand.exprType.isEqual(TypeBool) || node.rightOperand.exprType.isEqual(TypeVoid)){
                     throw new SemanticError("Unmatched type in NE or EQ.", node.pos);
                 }
-            } else {
+            } else if(node.rightOperand.exprType.isEqual(TypeNull)){
                 if(node.leftOperand.exprType.isEqual(TypeInt) || node.leftOperand.exprType.isEqual(TypeString)
                     || node.leftOperand.exprType.isEqual(TypeBool) || node.leftOperand.exprType.isEqual(TypeVoid)){
                     throw new SemanticError("Unmatched type in NE or EQ.", node.pos);
