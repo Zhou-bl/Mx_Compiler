@@ -217,6 +217,16 @@ public class SemChecker implements ASTVisitor {
                 }
             }
             ((FuncDefNode) FuncStation.peek()).hasReturn = true;
+        } else {
+            LambdaExprNode curFunc = (LambdaExprNode) FuncStation.peek();
+            if(node.resValue == null) curFunc.returnType = TypeVoid;
+            else {
+                node.resValue.accept(this);
+                if(curFunc.returnType == null) curFunc.returnType = node.resValue.exprType;
+                else if(!curFunc.returnType.isEqual(node.resValue.exprType)){
+                    throw new SemanticError("Multiple return type.", node.pos);
+                }
+            }
         }
     }
 
@@ -394,6 +404,7 @@ public class SemChecker implements ASTVisitor {
         //6.EQ,NE : 左右两边类型相等 或 null和class\array
         node.leftOperand.accept(this);
         node.rightOperand.accept(this);
+        node.isAssignment = false;
         if(node.opSymbol != BinaryExprNode.BinaryOpType.ASSIGN && node.opSymbol != BinaryExprNode.BinaryOpType.NE
         && node.opSymbol != BinaryExprNode.BinaryOpType.EQ && !node.leftOperand.exprType.isEqual(node.rightOperand.exprType)){
             throw new SemanticError("Unmatched operand type.", node.pos);
@@ -420,13 +431,92 @@ public class SemChecker implements ASTVisitor {
             }
         }
         if(node.opSymbol == BinaryExprNode.BinaryOpType.ASSIGN){
-            
+            if(!node.leftOperand.isAssignment){
+                throw new SemanticError("Left value can't be assigned in ASSIGN.", node.pos);
+            }
+            if(!node.leftOperand.exprType.isEqual(node.rightOperand.exprType) && !node.rightOperand.exprType.isEqual(TypeNull)){
+                throw new SemanticError("Unmatched operand type in ASSIGN.", node.pos);
+            }
+            if(node.rightOperand.exprType.isEqual(TypeNull)){
+                if(node.leftOperand.exprType.isEqual(TypeInt) || node.leftOperand.exprType.isEqual(TypeString)
+                        || node.leftOperand.exprType.isEqual(TypeBool) || node.leftOperand.exprType.isEqual(TypeVoid)){
+                    throw new SemanticError("Unmatched operand type in ASSIGN.", node.pos);
+                }
+            }
+            node.isAssignment = true;
+        }
+        if(node.opSymbol == BinaryExprNode.BinaryOpType.EQ || node.opSymbol == BinaryExprNode.BinaryOpType.NE){
+            if(!node.leftOperand.exprType.isEqual(TypeNull) && !node.rightOperand.exprType.isEqual(TypeNull)){
+                if(!node.leftOperand.exprType.isEqual(node.rightOperand.exprType)) throw new SemanticError("Unmatched operand type in NE or EQ.", node.pos);
+            }
+            if(node.leftOperand.exprType.isEqual(TypeNull)){
+                if(node.rightOperand.exprType.isEqual(TypeInt) || node.rightOperand.exprType.isEqual(TypeString)
+                        || node.rightOperand.exprType.isEqual(TypeBool) || node.rightOperand.exprType.isEqual(TypeVoid)){
+                    throw new SemanticError("Unmatched type in NE or EQ.", node.pos);
+                }
+            } else {
+                if(node.leftOperand.exprType.isEqual(TypeInt) || node.leftOperand.exprType.isEqual(TypeString)
+                    || node.leftOperand.exprType.isEqual(TypeBool) || node.leftOperand.exprType.isEqual(TypeVoid)){
+                    throw new SemanticError("Unmatched type in NE or EQ.", node.pos);
+                }
+            }
+        }
+        if(node.opSymbol == BinaryExprNode.BinaryOpType.GT || node.opSymbol == BinaryExprNode.BinaryOpType.LT || node.opSymbol == BinaryExprNode.BinaryOpType.GE
+            || node.opSymbol == BinaryExprNode.BinaryOpType.LE || node.opSymbol == BinaryExprNode.BinaryOpType.EQ || node.opSymbol == BinaryExprNode.BinaryOpType.NE
+            || node.opSymbol == BinaryExprNode.BinaryOpType.LAND || node.opSymbol == BinaryExprNode.BinaryOpType.LOR){
+            node.exprType = TypeBool;
+        }
+        if(node.opSymbol == BinaryExprNode.BinaryOpType.ADD || node.opSymbol == BinaryExprNode.BinaryOpType.SUB || node.opSymbol == BinaryExprNode.BinaryOpType.MUL
+            || node.opSymbol == BinaryExprNode.BinaryOpType.DIV || node.opSymbol == BinaryExprNode.BinaryOpType.MOD || node.opSymbol == BinaryExprNode.BinaryOpType.SHL
+            || node.opSymbol == BinaryExprNode.BinaryOpType.SHR || node.opSymbol == BinaryExprNode.BinaryOpType.AND || node.opSymbol == BinaryExprNode.BinaryOpType.XOR
+            || node.opSymbol == BinaryExprNode.BinaryOpType.OR || node.opSymbol == BinaryExprNode.BinaryOpType.ASSIGN){
+            node.exprType = node.leftOperand.exprType;
         }
     }
 
-    @Override public void visit(BoolConstantExprNode node){}
-    @Override public void visit(IntConstantExprNode node){}
-    @Override public void visit(StringConstantExprNode node){}
-    @Override public void visit(NullExprNode node){}
+    @Override
+    public void visit(ThisExprNode node){
+        if(curClass == null){
+            throw new SemanticError("Not in a class.", node.pos);
+        }
+        node.exprType = new ClassTypeNode(curClass, node.pos);
+        node.isAssignment = false;
+    }
+
+    @Override
+    public void visit(LambdaExprNode node){
+        curScope = new Scope(curScope);
+        FuncStation.push(node);
+        if(node.lambdaParameter != null) node.lambdaParameter.forEach(tmp -> tmp.accept(this));
+        if(node.parameterForCall != null) node.parameterForCall.forEach(tmp -> tmp.accept(this));
+        if(node.parameterForCall == null || node.lambdaParameter == null){
+            if(!(node.parameterForCall == null && node.lambdaParameter == null)){
+                throw new SemanticError("Unmatched parameter list in lambda expression.", node.pos);
+            }
+        } else {
+            if(node.lambdaParameter.size() != node.parameterForCall.size()){
+                throw new SemanticError("Unmatched parameter list in lambda expression.", node.pos);
+            }
+            for(int i = 0; i < node.lambdaParameter.size(); ++i){
+                if(!node.lambdaParameter.get(i).variableType.isEqual(node.parameterForCall.get(i).exprType)){
+                    throw new SemanticError("Unmatched parameter list in lambda expression.", node.pos);
+                }
+            }
+        }
+        node.funcBody.stmtList.forEach(tmp -> tmp.accept(this));
+        if(node.returnType == null) node.exprType = TypeVoid;
+        else node.exprType = node.returnType;
+        node.isAssignment = false;
+        FuncStation.pop();
+        curScope = curScope.parent;
+    }
+
+    @Override public void visit(ArrayTypeNode node) {}
+    @Override public void visit(BoolConstantExprNode node) {}
+    @Override public void visit(ClassTypeNode node) {}
+    @Override public void visit(IntConstantExprNode node) {}
+    @Override public void visit(NullExprNode node) {}
+    @Override public void visit(StringConstantExprNode node) {}
+    @Override public void visit(VoidTypeNode node) {}
 
 }
