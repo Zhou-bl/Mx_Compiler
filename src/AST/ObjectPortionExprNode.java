@@ -9,7 +9,7 @@ public class ObjectPortionExprNode extends ExprNode {
     public ExprNode baseObject;
     public String member;
 
-    public boolean forFunc;//ÅĞ¶Ïµ÷ÓÃµÄÊÇ·ñÎª³ÉÔ±º¯Êı»¹ÊÇ³ÉÔ±±äÁ¿;
+    public boolean forFunc;//åˆ¤æ–­æ˜¯å¦æ˜¯è°ƒç”¨å‡½æ•°;
     public FuncDefNode funcInfo;
 
     public ObjectPortionExprNode(ExprNode _base, String _member, Position _pos){

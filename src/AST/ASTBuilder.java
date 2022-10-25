@@ -4,7 +4,6 @@ import Parser.MxBaseVisitor;
 import Parser.MxParser;
 import Utils.Position;
 import Utils.SyntaxError;
-import org.antlr.v4.codegen.model.chunk.TokenPropertyRef_pos;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.ArrayList;
@@ -126,7 +125,7 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
                     break;
                 }
             }
-            if(!isBlank){//�зǿ����
+            if(!isBlank){//
                 stmtArt = new ArrayList<>();
                 for(MxParser.StatementContext _tmp : ctx.statement()){
                     if(!(_tmp instanceof MxParser.BlankStatementContext)){
