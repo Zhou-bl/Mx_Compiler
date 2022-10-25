@@ -84,8 +84,8 @@ public class SemChecker implements ASTVisitor {
 
     @Override
     public void visit(FuncDefNode node){
-        //1.¼ì²éº¯ÊıÀàĞÍÊÇ·ñÕıÈ·(ÊÇ·ñ´æÔÚ»òÎªvoid);2.¼ì²éÊÇ·ñÓĞ·µ»ØÖµÓï¾ä(·Çmain·Çvoidº¯Êı±ØĞëÓĞreturn);3.Îªmainº¯ÊıÌí¼ÓÄ¬ÈÏµÄ·µ»ØÖµÓï¾ä;
-        //¶Ô·µ»ØÓï¾äµÄ¼ì²é»áÔÚvisit returnStmtÊ±½øĞĞ;
+        //1.æ£€æŸ¥å‡½æ•°ç±»å‹æ˜¯å¦æ­£ç¡®(æ˜¯å¦å­˜åœ¨æˆ–ä¸ºvoid);2.æ£€æŸ¥æ˜¯å¦æœ‰è¿”å›å€¼è¯­å¥(émainévoidå‡½æ•°å¿…é¡»æœ‰return);3.ä¸ºmainå‡½æ•°æ·»åŠ é»˜è®¤çš„è¿”å›å€¼è¯­å¥;
+        //å¯¹è¿”å›è¯­å¥çš„æ£€æŸ¥ä¼šåœ¨visit returnStmtæ—¶è¿›è¡Œ;
         FuncStation.push(node);
         curScope = new Scope(curScope);
         if(node.functionType != null && !globalScope.containsClass(node.functionType.typeID) && !node.functionType.isEqual(TypeVoid)){
@@ -119,7 +119,7 @@ public class SemChecker implements ASTVisitor {
 
     @Override
     public void visit(IfStmtNode node){
-        //1.condition ±ØĞëÊÇboolÀàĞÍ;
+        //1.condition å¿…é¡»æ˜¯boolç±»å‹;
         if(node.condition == null){
             throw new SemanticError("Condition in if statement can't be empty.", node.pos);
         }
@@ -168,7 +168,7 @@ public class SemChecker implements ASTVisitor {
 
     @Override
     public void visit(ForStmtNode node){
-        //1.ÅĞ¶ÏinitÊÇ·ñÎªÁ½ÖÖÀàĞÍÖ®Ò»;2.ÅĞ¶ÏconditionÊÇ·ñÎªbool;3.×¢ÒâforÑ­»·µÄÑ­»·ÌåµÄÃüÃû¿Õ¼äÎÊÌâ;
+        //1.åˆ¤æ–­initæ˜¯å¦ä¸ºä¸¤ç§ç±»å‹ä¹‹ä¸€;2.åˆ¤æ–­conditionæ˜¯å¦ä¸ºbool;3.æ³¨æ„forå¾ªç¯çš„å¾ªç¯ä½“çš„å‘½åç©ºé—´é—®é¢˜;
         curLoops++;
         curScope = new Scope(curScope);
         if(node.init != null){
@@ -199,7 +199,7 @@ public class SemChecker implements ASTVisitor {
 
     @Override
     public void visit(ReturnStmtNode node){
-        //1.¼ì²éÊÇ·ñÔÚº¯ÊıÀïÃæ;2.¼ì²é·µ»ØÖµÀàĞÍÊÇ·ñºÍº¯ÊıÀàĞÍÒ»ÖÂ;
+        //1.æ£€æŸ¥æ˜¯å¦åœ¨å‡½æ•°é‡Œé¢;2.æ£€æŸ¥è¿”å›å€¼ç±»å‹æ˜¯å¦å’Œå‡½æ•°ç±»å‹ä¸€è‡´;
         if(FuncStation.size() == 0){
             throw new SemanticError("No return for a function.", node.pos);
         }
@@ -209,11 +209,11 @@ public class SemChecker implements ASTVisitor {
                 if(!curFunc.functionType.isEqual(TypeVoid) && curFunc.functionType != null){
                     throw new SemanticError("Invalid return value.", node.pos);
                 }
-            }else{//¹¹Ôìº¯Êı²»ÄÜÓĞreturn value;
+            }else{//æ„é€ å‡½æ•°ä¸èƒ½æœ‰return value;
                 if(curFunc.functionType == null) throw new SemanticError("Construct function can't have a return value.", node.pos);
                 node.resValue.accept(this);
                 if(!curFunc.functionType.isEqual(node.resValue.exprType) && !node.resValue.exprType.isEqual(TypeNull)){
-                    //TypeNull¿ÉÒÔ¸³¸øÆäËûType
+                    //TypeNullå¯ä»¥èµ‹ç»™å…¶ä»–Type
                     throw new SemanticError("Return value is unmatched to function type.", node.pos);
                 }
             }
@@ -257,7 +257,7 @@ public class SemChecker implements ASTVisitor {
 
     @Override
     public void visit(ObjectPortionExprNode node){
-        //1.ÌØÅĞÊı×éÀà;2.ÆäËûÀà±ğÒ»Ñù
+        //1.ç‰¹åˆ¤æ•°ç»„ç±»;2.å…¶ä»–ç±»åˆ«ä¸€æ ·
         node.baseObject.accept(this);
         if(node.baseObject.exprType instanceof ArrayTypeNode){
             if(!node.forFunc){
@@ -285,7 +285,7 @@ public class SemChecker implements ASTVisitor {
 
     @Override
     public void visit(AllocExprNode node){
-        //1.¿´allocµÄtypeÊÇ·ñ´æÔÚ;2.¿´Êı×éÎ¬ÊıÊÇ·ñÊÇint
+        //1.çœ‹allocçš„typeæ˜¯å¦å­˜åœ¨;2.çœ‹æ•°ç»„ç»´æ•°æ˜¯å¦æ˜¯int
         if(!globalScope.containsClass(node.allocType.typeID)){
             throw new SemanticError("Undefined type.", node.pos);
         }
@@ -304,13 +304,13 @@ public class SemChecker implements ASTVisitor {
 
     @Override
     public void visit(FuncCallExprNode node){
-        //1.¼ì²éº¯ÊıÊÇ·ñ´æÔÚ;2.¼ì²éº¯ÊıµÄ²ÎÊıÁĞ±íÊÇ·ñ·ûºÏ¹æ·¶
+        //1.æ£€æŸ¥å‡½æ•°æ˜¯å¦å­˜åœ¨;2.æ£€æŸ¥å‡½æ•°çš„å‚æ•°åˆ—è¡¨æ˜¯å¦ç¬¦åˆè§„èŒƒ
         FuncDefNode funcBase;
-        if(node.func instanceof ObjectPortionExprNode){//Àà³ÉÔ±º¯Êıµ÷ÓÃ
+        if(node.func instanceof ObjectPortionExprNode){//ç±»æˆå‘˜å‡½æ•°è°ƒç”¨
             ((ObjectPortionExprNode) node.func).forFunc = true;
             node.func.accept(this);
             funcBase = ((ObjectPortionExprNode) node.func).funcInfo;
-        }else{//×¢ÒâÔÚÀàÖĞ»áÓÅÏÈµ÷ÓÃÀàµÄ³ÉÔ±º¯Êı
+        }else{//æ³¨æ„åœ¨ç±»ä¸­ä¼šä¼˜å…ˆè°ƒç”¨ç±»çš„æˆå‘˜å‡½æ•°
             String funcID = ((IdentifierExprNode) node.func).identifier;
             if(curClass == null){
                 if(!globalScope.containsFunction(funcID)){
@@ -336,7 +336,7 @@ public class SemChecker implements ASTVisitor {
         if((node.parameterListForCall == null && funcBase.parameterList != null)
             || (node.parameterListForCall != null && funcBase.parameterList == null)){
             isWrong = true;
-        }else{//´ËÊ±²ÎÊı¶¼Îª¿Õ»òÕß¶¼²»Îª¿Õ;
+        }else{//æ­¤æ—¶å‚æ•°éƒ½ä¸ºç©ºæˆ–è€…éƒ½ä¸ä¸ºç©º;
             if(node.parameterListForCall != null){
                 if(node.parameterListForCall.size() != funcBase.parameterList.size()) isWrong = true;
                 else{
@@ -359,8 +359,8 @@ public class SemChecker implements ASTVisitor {
 
     @Override
     public void visit(ArrayAccessNode node){
-        //1.¼ì²ébaseÊÇ·ñÕıÈ·;2.¼ì²éindexÊÇ·ñÎªint;
-        //»áÒ»Â·µİ¹éµ½identifier¼ì²éÊÇ·ñ´æÔÚ;
+        //1.æ£€æŸ¥baseæ˜¯å¦æ­£ç¡®;2.æ£€æŸ¥indexæ˜¯å¦ä¸ºint;
+        //ä¼šä¸€è·¯é€’å½’åˆ°identifieræ£€æŸ¥æ˜¯å¦å­˜åœ¨;
         node.array.accept(this);
         if(!(node.array.exprType instanceof ArrayTypeNode)){
             throw new SemanticError("Not a array type.", node.pos);
@@ -379,7 +379,7 @@ public class SemChecker implements ASTVisitor {
 
     @Override
     public void visit(MonocularOpExprNode node){
-        //1.ÓÒÖµ²»ÄÜ×ÔÔö×Ô¼õ; 2.Logic_Not ONLY for TypeBool; 3.other operator only for TypeInt;
+        //1.å³å€¼ä¸èƒ½è‡ªå¢è‡ªå‡; 2.Logic_Not ONLY for TypeBool; 3.other operator only for TypeInt;
         node.operand.accept(this);
         if(!node.operand.exprType.isEqual(TypeBool) && !node.operand.exprType.isEqual(TypeInt)){
             throw new SemanticError("Invalid type for monocular operator.", node.pos);
@@ -401,12 +401,12 @@ public class SemChecker implements ASTVisitor {
 
     @Override
     public void visit(BinaryExprNode node){
-        //1.notice: TypeNull ¿ÉÒÔÓë arrayType classType ×ö ASSIGN\EQ\NE ÓëÆäËûÀàĞÍ ²»ĞĞ
-        //2.ASSIGN ²Ù×÷±ØĞë operand1 ±ØĞëÎª leftvalue
+        //1.notice: TypeNull å¯ä»¥ä¸ arrayType classType åš ASSIGN\EQ\NE ä¸å…¶ä»–ç±»å‹ ä¸è¡Œ
+        //2.ASSIGN æ“ä½œå¿…é¡» operand1 å¿…é¡»ä¸º leftvalue
         //3.ADD,GT,LT,GE,LE : int\string valid;
         //4.SUB,MUL,DIV,MOD,SHL,SHR,AND,XOR,OR : int;
         //5.LAND,LOR : bool;
-        //6.EQ,NE : ×óÓÒÁ½±ßÀàĞÍÏàµÈ »ò nullºÍclass\array
+        //6.EQ,NE : å·¦å³ä¸¤è¾¹ç±»å‹ç›¸ç­‰ æˆ– nullå’Œclass\array
         node.leftOperand.accept(this);
         node.rightOperand.accept(this);
         node.isAssignment = false;

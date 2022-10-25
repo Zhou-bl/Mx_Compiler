@@ -11,7 +11,7 @@ public class Position {
         this.column = c;
     }
 
-    public Position(Token token){//通过token获得位置信息
+    public Position(Token token){//閫氳繃token鑾峰緱浣嶇疆淇℃伅
         this.row = token.getLine();
         this.column = token.getCharPositionInLine();
     }
