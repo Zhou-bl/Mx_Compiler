@@ -1,4 +1,4 @@
-// Generated from D:/ึÜฑüมุ/coding/Mx_Compiler/src/Parser\Mx.g4 by ANTLR 4.10.1
+// Generated from D:/coding/Mx_Compiler/src/Parser\Mx.g4 by ANTLR 4.10.1
 package Parser;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
