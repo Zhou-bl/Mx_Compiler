@@ -224,7 +224,7 @@ public class SemChecker implements ASTVisitor {
             else {
                 node.resValue.accept(this);
                 if(curFunc.returnType == null) curFunc.returnType = node.resValue.exprType;
-                else if(!curFunc.returnType.isEqual(node.resValue.exprType)){
+                else if(!curFunc.returnType.isEqual(node.resValue.exprType)){//根据c++的lambda特性,判断lambda的返回值类型是否一致;
                     throw new SemanticError("Multiple return type.", node.pos);
                 }
             }
@@ -508,12 +508,16 @@ public class SemChecker implements ASTVisitor {
                 }
             }
         }
+        Scope scopeCopy = curScope;
+        if(!node.isGlobal) curScope = new Scope(null);
         node.funcBody.stmtList.forEach(tmp -> tmp.accept(this));
+        curScope = scopeCopy;
         if(node.returnType == null) node.exprType = TypeVoid;
         else node.exprType = node.returnType;
         node.isAssignment = false;
         FuncStation.pop();
         curScope = curScope.parent;
+
     }
 
     @Override public void visit(ArrayTypeNode node) {}

@@ -16,17 +16,19 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 public class LambdaExprNode extends ExprNode {
+    public boolean isGlobal;
     public TypeNode returnType;
     public ArrayList<VarDefNode> lambdaParameter;
     public BlockStmtNode funcBody;
     public ArrayList<ExprNode> parameterForCall;
 
-    public LambdaExprNode(ArrayList<VarDefNode> _lambdaPara, ArrayList<ExprNode> _para, BlockStmtNode _body, Position _pos){
+    public LambdaExprNode(ArrayList<VarDefNode> _lambdaPara, ArrayList<ExprNode> _para, BlockStmtNode _body, boolean _isGlobal, Position _pos){
         super(_pos);
         this.returnType = null;
         this.lambdaParameter = _lambdaPara;
         this.funcBody = _body;
         this.parameterForCall = _para;
+        this.isGlobal = _isGlobal;
     }
     @Override
     public void accept(ASTVisitor visitor) {

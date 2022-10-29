@@ -47,9 +47,9 @@ public class MxParser extends Parser {
 			null, "';'", "'('", "')'", "'{'", "'}'", "'['", "']'", "'++'", "'--'", 
 			"'!'", "'~'", "'*'", "'/'", "'%'", "'+'", "'-'", "'>>'", "'<<'", "'<'", 
 			"'<='", "'>'", "'>='", "'=='", "'!='", "'&'", "'^'", "'|'", "'&&'", "'||'", 
-			"'='", "','", "'.'", "'[&]'", "'->'", "'int'", "'bool'", "'string'", 
-			"'void'", "'if'", "'else'", "'for'", "'while'", "'break'", "'continue'", 
-			"'return'", "'new'", "'class'", "'this'", "'null'"
+			"'='", "','", "'.'", null, "'->'", "'int'", "'bool'", "'string'", "'void'", 
+			"'if'", "'else'", "'for'", "'while'", "'break'", "'continue'", "'return'", 
+			"'new'", "'class'", "'this'", "'null'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
