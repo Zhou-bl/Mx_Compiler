@@ -411,7 +411,7 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
         //LAMBDAS1 lambdaParameterList? LAMBDAS2 block '(' parameterListForCall? ')'
         Position _pos = new Position(ctx);
         ArrayList<VarDefNode> _parameter = null;
-        boolean _isGlobal = ctx.LAMBDAS1().getText().equals("[&]");
+        boolean _isGlobal = ctx.children.get(1).getText().equals("&");
         if(ctx.lambdaParameterList() != null && ctx.lambdaParameterList().parameterList() != null){
             _parameter = new ArrayList<>();
             List<MxParser.VariableTypeContext> _parameterTypeList = ctx.lambdaParameterList().parameterList().variableType();

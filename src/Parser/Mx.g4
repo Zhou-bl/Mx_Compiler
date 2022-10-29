@@ -45,7 +45,7 @@ expression
     | operand1=expression op='||' operand2=expression                               #binaryExpr
     | <assoc=right> operand1=expression op='=' operand2=expression                  #binaryExpr
     | THIS                                                                          #objPointer
-    | LAMBDAS1 lambdaParameterList? LAMBDAS2 block '(' parameterListForCall? ')'    #lambdaExpr
+    | '[' '&'? ']' lambdaParameterList? LAMBDAS2 block '(' parameterListForCall? ')'    #lambdaExpr
     ;
 
 allocFormat
@@ -121,7 +121,7 @@ NEW : 'new';
 CLASS : 'class';
 THIS : 'this';
 
-fragment LAMBDAS1 : ('[&]' | '[]');
+//fragment LAMBDAS1 : '[&]' | '[]';
 LAMBDAS2 : '->';
 
 //const value
