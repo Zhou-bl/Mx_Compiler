@@ -104,9 +104,6 @@ functionType
 //define tokens:
 //symbols:
 DOT : '.';
-LAMBDAS1 : '[&]' | '[]';
-LAMBDAS2 : '->';
-
 
 //reserved words
 INT : 'int';
@@ -123,6 +120,9 @@ RETURN : 'return';
 NEW : 'new';
 CLASS : 'class';
 THIS : 'this';
+
+fragment LAMBDAS1 : ('[&]' | '[]');
+LAMBDAS2 : '->';
 
 //const value
 NULL_CONSTANT : 'null';
