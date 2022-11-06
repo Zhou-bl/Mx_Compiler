@@ -44,7 +44,7 @@ public class SemChecker implements ASTVisitor {
                 if(!globalScope.containsClass(singleVarDecl.variableType.typeID)){
                     throw new SemanticError("Undefined type.", singleVarDecl.pos);
                 }
-                if(singleVarDecl.initValue != null){
+                if(singleVarDecl.initValue != null){//初始值如果不为空,则访问初始值
                     singleVarDecl.initValue.accept(this);
                     if(!singleVarDecl.initValue.exprType.isEqual(TypeNull) && !singleVarDecl.initValue.exprType.isEqual(varStmt.varType)){
                         throw new SemanticError("Unmatched type in variable declare.", singleVarDecl.pos);
@@ -64,16 +64,16 @@ public class SemChecker implements ASTVisitor {
 
     @Override
     public void visit(VarDefNode node){
-        if(curScope.containsVariable(node.variableID)){
+        if(curScope.containsVariable(node.variableID)){//判断变量名是否被占用
             throw new SemanticError("Duplicate declare variable.", node.pos);
         }
-        if(globalScope.containsClass(node.variableID)){
+        if(globalScope.containsClass(node.variableID)){//判断ID是否和class重名
             throw new SemanticError("\"" + node.variableID + "\" is a identifier of class.", node.pos);
         }
-        if(!globalScope.containsClass(node.variableType.typeID)){
+        if(!globalScope.containsClass(node.variableType.typeID)){//判断类型是否合法
             throw new SemanticError("Undefined variable type " + "\"" + node.variableType.typeID + "\"", node.pos);
         }
-        if(node.initValue != null){
+        if(node.initValue != null){//访问初值,并判断类型是否一致
             node.initValue.accept(this);
             if(!node.initValue.exprType.isEqual(TypeNull) && !node.initValue.exprType.isEqual(node.variableType)){
                 throw new SemanticError("Unmatched type in variable declare.", node.pos);
@@ -88,19 +88,19 @@ public class SemChecker implements ASTVisitor {
         //对返回语句的检查会在visit returnStmt时进行;
         FuncStation.push(node);
         curScope = new Scope(curScope);
-        if(node.functionType != null && !globalScope.containsClass(node.functionType.typeID) && !node.functionType.isEqual(TypeVoid)){
+        if(node.functionType != null && !globalScope.containsClass(node.functionType.typeID) && !node.functionType.isEqual(TypeVoid)){//检查函数类型
             throw new SemanticError("Undefined function type.", node.pos);
         }
-        if(node.parameterList != null){
+        if(node.parameterList != null){//访问parameter list
             node.parameterList.forEach(tmp -> tmp.accept(this));
         }
-        if(node.functionBody.stmtList != null){
+        if(node.functionBody.stmtList != null){//访问函数体
             node.functionBody.stmtList.forEach(tmp -> tmp.accept(this));
         }
-        if(node.functionType != null && !node.functionType.isEqual(TypeVoid) && !node.functionID.equals("main") && !node.hasReturn){
+        if(node.functionType != null && !node.functionType.isEqual(TypeVoid) && !node.functionID.equals("main") && !node.hasReturn){//判断return语句
             throw new SemanticError("No return statement in no-void or main function", node.pos);
         }
-        if(node.functionID.equals("main") && !node.hasReturn){
+        if(node.functionID.equals("main") && !node.hasReturn){//没有return语句时,手动让main函数返回0
             if(node.functionBody.stmtList == null) node.functionBody.stmtList = new ArrayList<>();
             node.functionBody.stmtList.add(new ReturnStmtNode(new IntConstantExprNode(0, new Position(-1, -1)), new Position(-1, -1)));
         }
@@ -187,9 +187,9 @@ public class SemChecker implements ASTVisitor {
             node.incrExpr.accept(this);
         }
         if(node.loopBody != null){
-            if(node.loopBody instanceof BlockStmtNode){
+            if(node.loopBody instanceof BlockStmtNode){//这里不能直接node.loopBody.accept(this) 防止新增一个scope
                 ((BlockStmtNode) node.loopBody).stmtList.forEach(tmp -> tmp.accept(this));
-            }else{
+            }else{//单个语句直接访问
                 node.loopBody.accept(this);
             }
         }
@@ -200,16 +200,16 @@ public class SemChecker implements ASTVisitor {
     @Override
     public void visit(ReturnStmtNode node){
         //1.检查是否在函数里面;2.检查返回值类型是否和函数类型一致;
-        if(FuncStation.size() == 0){
+        if(FuncStation.size() == 0){//return语句必须在函数体里面
             throw new SemanticError("No return for a function.", node.pos);
         }
         if(FuncStation.peek() instanceof FuncDefNode){
             FuncDefNode curFunc = (FuncDefNode) FuncStation.peek();
-            if(node.resValue == null){//return ;
+            if(node.resValue == null){//return ; 无return value:
                 if(curFunc.functionType != null && !curFunc.functionType.isEqual(TypeVoid)){
                     throw new SemanticError("Invalid return value.", node.pos);
                 }
-            }else{//构造函数不能有return value;
+            }else{//构造函数不能有return value; 有return value:
                 if(curFunc.functionType == null) throw new SemanticError("Construct function can't have a return value.", node.pos);
                 node.resValue.accept(this);
                 if(!curFunc.functionType.isEqual(node.resValue.exprType) && !node.resValue.exprType.isEqual(TypeNull)){
@@ -223,8 +223,9 @@ public class SemChecker implements ASTVisitor {
             if(node.resValue == null) curFunc.returnType = TypeVoid;
             else {
                 node.resValue.accept(this);
+                //根据return 表达式自行判断函数的返回值类型
                 if(curFunc.returnType == null) curFunc.returnType = node.resValue.exprType;
-                else if(!curFunc.returnType.isEqual(node.resValue.exprType)){//根据c++的lambda特性,判断lambda的返回值类型是否一致;
+                else if(!curFunc.returnType.isEqual(node.resValue.exprType)){//根据c++的lambda特性,判断多个return语句的lambda的返回值类型是否一致;
                     throw new SemanticError("Multiple return type.", node.pos);
                 }
             }
@@ -259,8 +260,8 @@ public class SemChecker implements ASTVisitor {
     public void visit(ObjectPortionExprNode node){
         //1.特判数组类;2.其他类别一样
         node.baseObject.accept(this);
-        if(node.baseObject.exprType instanceof ArrayTypeNode){
-            if(!node.forFunc){
+        if(node.baseObject.exprType instanceof ArrayTypeNode){//数组类型只可调用size()函数:
+            if(!node.forFunc){//不是函数调用 则报错
                 throw new SemanticError("Array type don't have members.", node.pos);
             }
             if(!node.member.equals("size")){
@@ -337,10 +338,10 @@ public class SemChecker implements ASTVisitor {
             || (node.parameterListForCall != null && funcBase.parameterList == null)){
             isWrong = true;
         }else{//此时参数都为空或者都不为空;
-            if(node.parameterListForCall != null){
+            if(node.parameterListForCall != null){//判断都不为空:
                 if(node.parameterListForCall.size() != funcBase.parameterList.size()) isWrong = true;
                 else{
-                    for(int i = 0; i < node.parameterListForCall.size(); ++i){
+                    for(int i = 0; i < node.parameterListForCall.size(); ++i){//依次遍历检查类型
                         if(!funcBase.parameterList.get(i).variableType.isEqual(node.parameterListForCall.get(i).exprType)
                                 && !node.parameterListForCall.get(i).exprType.isEqual(TypeNull)){
                             isWrong = true;
@@ -492,6 +493,8 @@ public class SemChecker implements ASTVisitor {
     public void visit(LambdaExprNode node){
         curScope = new Scope(curScope);
         FuncStation.push(node);
+        Scope scopeCopy = curScope;
+        if(!node.isGlobal) curScope = new Scope(null);
         if(node.lambdaParameter != null) node.lambdaParameter.forEach(tmp -> tmp.accept(this));
         if(node.parameterForCall != null) node.parameterForCall.forEach(tmp -> tmp.accept(this));
         if(node.parameterForCall == null || node.lambdaParameter == null){
@@ -508,8 +511,6 @@ public class SemChecker implements ASTVisitor {
                 }
             }
         }
-        Scope scopeCopy = curScope;
-        if(!node.isGlobal) curScope = new Scope(null);
         node.funcBody.stmtList.forEach(tmp -> tmp.accept(this));
         curScope = scopeCopy;
         if(node.returnType == null) node.exprType = TypeVoid;
