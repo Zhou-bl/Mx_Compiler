@@ -25,4 +25,12 @@ public class Value {
         //返回%xxx
         return "%" + this.name;
     }
+
+    public String getTypeAndName(){
+        return this.type.typeName() + " " + this.getName();
+    }
+
+    public String generateIRCode(){
+        throw new RuntimeException("Can't transfer basic type value to string.");
+    }
 }

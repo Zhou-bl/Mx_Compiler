@@ -7,7 +7,7 @@ public class BoolConstant extends IRConstant{
     public boolean value;
 
     public BoolConstant(boolean _value){
-        super("bool_const", new BoolType());
+        super("_bool_const", new BoolType());
         this.value = _value;
     }
 
@@ -17,7 +17,12 @@ public class BoolConstant extends IRConstant{
     }
 
     @Override
+    public String generateIRCode(){
+        throw new RuntimeException("ToString in BoolConstant.");
+    }
+
+    @Override
     public void accept(IRVisitor visitor){
-        visitor.visit(this);
+        //todo
     }
 }

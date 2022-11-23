@@ -6,18 +6,12 @@ public class PointerType extends IRType{
 
     public PointerType(IRType _baseType){
         if(_baseType instanceof PointerType){
-            if(((PointerType) _baseType).baseType instanceof VoidType){
-                throw new RuntimeException("\"PointerType\" can't point to \"VoidType\".");
-            }
             if(((PointerType) _baseType).baseType instanceof LabelType){
                 throw new RuntimeException("\"PointerType\" can't point to \"LabelType\".");
             }
             this.baseType = ((PointerType) _baseType).baseType;
             this.dim = ((PointerType) _baseType).dim + 1;
         } else {
-            if(_baseType instanceof VoidType){
-                throw new RuntimeException("\"PointerType\" can't point to \"VoidType\".");
-            }
             if(_baseType instanceof LabelType){
                 throw new RuntimeException("\"PointerType\" can't point to \"LabelType\".");
             }
@@ -28,18 +22,12 @@ public class PointerType extends IRType{
 
     public PointerType(IRType _baseType, int _dim){
         if(_baseType instanceof PointerType){
-            if(((PointerType) _baseType).baseType instanceof VoidType){
-                throw new RuntimeException("\"PointerType\" can't point to \"VoidType\".");
-            }
             if(((PointerType) _baseType).baseType instanceof LabelType){
                 throw new RuntimeException("\"PointerType\" can't point to \"LabelType\".");
             }
             this.baseType = ((PointerType) _baseType).baseType;
             this.dim = ((PointerType) _baseType).dim + _dim;
         } else {
-            if(_baseType instanceof VoidType){
-                throw new RuntimeException("\"PointerType\" can't point to \"VoidType\".");
-            }
             if(_baseType instanceof LabelType){
                 throw new RuntimeException("\"PointerType\" can't point to \"LabelType\".");
             }
