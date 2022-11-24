@@ -1,10 +1,12 @@
 package MiddleEnd;
 
 import AST.*;
+import MiddleEnd.Compound.IRModule;
 import Utils.GlobalScope;
 
-public class IRBuilder extends ASTVisitor {
-    GlobalScope globalScope;
+public class IRBuilder implements ASTVisitor {
+    public GlobalScope globalScope;
+    public IRModule targetModule;
     public IRBuilder(GlobalScope _globalScope){
         globalScope = _globalScope;
     }
