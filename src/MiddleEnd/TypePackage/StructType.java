@@ -9,7 +9,7 @@ public class StructType extends IRType{
     public ArrayList<IRType> typeList;
     public HashMap<String, IRType> typeTable;
 
-    public StructType(String _name){
+    public StructType(String _name){//先确定ID再添加成员
         this.typeSize = 0;
         this.name = "class." + _name;
         this.typeList = new ArrayList<>();

@@ -19,4 +19,12 @@ public class IRModule {
         classArrayList = new ArrayList<>();
         globalInitList = new ArrayList<>();
     }
+
+    public void addClass(StructType _newClass){
+        this.classArrayList.add(_newClass);
+    }
+
+    public void addFunction(IRFunction _newFunction){
+        this.functionArrayList.add(_newFunction);
+    }
 }
