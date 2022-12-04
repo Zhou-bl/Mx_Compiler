@@ -13,8 +13,8 @@ public class BitcastInst extends IRInstruction{
     }
 
     @Override
-    public String generateIRCode(){
-        return this.getName() + " = bitcast " + this.operands.get(0).getTypeAndName() + " to " +this.type.typeName();
+    public String toString(){
+        return this.getName() + " = bitcast " + this.operands.get(0).getTypeAndName() + " to " +this.type.toString();
     }
 
     @Override

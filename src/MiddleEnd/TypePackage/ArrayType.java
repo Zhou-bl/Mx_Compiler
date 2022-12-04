@@ -15,8 +15,8 @@ public class ArrayType extends IRType{
     }
 
     @Override
-    public String typeName(){
-        return "[" + Integer.toString(this.size) + " x " + this.baseType.typeName() + "]";
+    public String toString(){
+        return "[" + Integer.toString(this.size) + " x " + this.baseType.toString() + "]";
     }
 
     @Override

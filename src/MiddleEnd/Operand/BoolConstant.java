@@ -17,7 +17,7 @@ public class BoolConstant extends IRConstant{
     }
 
     @Override
-    public String generateIRCode(){
+    public String toString(){
         throw new RuntimeException("ToString in BoolConstant.");
     }
 

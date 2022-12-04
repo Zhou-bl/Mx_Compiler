@@ -24,7 +24,7 @@ public class BranchInst extends IRInstruction{
     }
 
     @Override
-    public String generateIRCode(){
+    public String toString(){
         if(this.operands.size() == 1){
             return "br " + this.operands.get(0).getTypeAndName();
         } else {

@@ -13,7 +13,7 @@ public class RetInst extends IRInstruction {
     }
 
     @Override
-    public String generateIRCode(){
+    public String toString(){
         String res;
         if(this.type instanceof VoidType){
             res = "void";

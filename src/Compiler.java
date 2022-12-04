@@ -3,6 +3,8 @@ import AST.RootNode;
 import FrontEnd.SymbolCollector;
 import FrontEnd.SemChecker;
 import FrontEnd.SetBuiltIn;
+import MiddleEnd.Compound.IRModule;
+import MiddleEnd.IRBuilder;
 import Parser.MxLexer;
 import Parser.MxParser;
 import Utils.GlobalScope;
@@ -12,10 +14,12 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.io.InputStream;
+import java.io.PrintStream;
 
 public class Compiler {
     public static void main(String[] args) throws Exception{
         InputStream input = System.in;
+        PrintStream output = System.out;
         try{
             MxLexer lexer = new MxLexer(CharStreams.fromStream(input));
             lexer.removeErrorListeners();
@@ -39,6 +43,12 @@ public class Compiler {
             symbolCollector.visit(ASTRoot);
             SemChecker semChecker = new SemChecker(globalScope);
             semChecker.visit(ASTRoot);
+
+            //codegen:
+            IRModule module = new IRModule();
+            IRBuilder IRbuilder = new IRBuilder(globalScope, module);
+            IRbuilder.visit(ASTRoot);
+            output.println(module);//print ir
 
         } catch (RuntimeException RuntimeError){
             System.err.println(RuntimeError.getMessage());

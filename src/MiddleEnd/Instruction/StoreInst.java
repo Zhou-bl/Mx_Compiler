@@ -14,7 +14,7 @@ public class StoreInst extends IRInstruction {
     }
 
     @Override
-    public String generateIRCode(){
+    public String toString(){
         return "store " + this.operands.get(0).getTypeAndName() + ", "
                 + this.operands.get(1).getTypeAndName() + ", align "
                 + this.operands.get(0).type.typeSize();

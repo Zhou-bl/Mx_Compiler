@@ -13,8 +13,8 @@ public class TruncInst extends IRInstruction{
     }
 
     @Override
-    public String generateIRCode(){
-        return this.getName() + " = trunc " + this.getOperand(0).getTypeAndName() + " to " + this.type.typeName();
+    public String toString(){
+        return this.getName() + " = trunc " + this.getOperand(0).getTypeAndName() + " to " + this.type.toString();
     }
 
     @Override

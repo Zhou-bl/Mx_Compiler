@@ -22,14 +22,15 @@ public class FunctionType extends IRType{
     }
 
     @Override
+    public String toString(){
+        return resType.toString();
+    }
+
+    @Override
     public int typeSize(){
         throw new RuntimeException("Try to get size of function type.");
     }
 
-    @Override
-    public String typeName(){
-        return this.resType.typeName();
-    }
 
     @Override
     public boolean isEqual(IRType other){

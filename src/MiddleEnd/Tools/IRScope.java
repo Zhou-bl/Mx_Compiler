@@ -5,7 +5,7 @@ import MiddleEnd.BasicClass.Value;
 import java.util.HashMap;
 
 public class IRScope {
-    public enum scopeType{Global, Flow, Func, Common, Class}
+    public enum scopeType{Global, Flow, Func, Block, Class}
     public scopeType type;
     public IRScope parentScope;
     public HashMap<String, Value> valueTable;
@@ -46,5 +46,17 @@ public class IRScope {
 
     public void putValue(String _id, Value _op){
         this.valueTable.put(_id, _op);
+    }
+
+    public void setInvalid(){
+        switch (this.type){
+            case Flow, Global, Class -> {}
+            default -> this.isValid = false;
+        }
+    }
+
+    public IRScope upRoot(){
+        if(!this.isValid) this.parentScope.setInvalid();
+        return this.parentScope;
     }
 }

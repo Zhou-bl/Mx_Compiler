@@ -16,7 +16,7 @@ public class IntConstant extends IRConstant{
         return String.valueOf(this.value);
     }
     @Override
-    public String generateIRCode(){
+    public String toString(){
         throw new RuntimeException("ToString in IntConstant.");
     }
 

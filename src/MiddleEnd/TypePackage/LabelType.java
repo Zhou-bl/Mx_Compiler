@@ -7,7 +7,7 @@ public class LabelType extends IRType{
     }
 
     @Override
-    public String typeName(){
+    public String toString(){
         return "label";
     }
 

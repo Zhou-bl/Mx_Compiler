@@ -18,10 +18,10 @@ public class GepInst extends IRInstruction{
     }
 
     @Override
-    public String generateIRCode(){
+    public String toString(){
         StringBuilder resStr = new StringBuilder();
         resStr.append(this.getName()).append(" = getelementptr inbounds ").
-                append(getOperand(0).type.deReference().typeName()).append(", ").append(getOperand(0).getTypeAndName());
+                append(getOperand(0).type.deReference().toString()).append(", ").append(getOperand(0).getTypeAndName());
         if(this.operands.size() <= 1){
             throw new RuntimeException("In GepInst too less operand.");
         }

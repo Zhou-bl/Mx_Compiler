@@ -8,7 +8,7 @@ public class BoolType extends IRType{
     }
 
     @Override
-    public String typeName(){
+    public String toString(){
         return "i8";
     }
 

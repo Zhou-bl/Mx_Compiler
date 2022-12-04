@@ -26,8 +26,8 @@ public class StringConstant extends IRConstant {
     }
 
     @Override
-    public String generateIRCode(){
-        return this.getName() + " = private unnamed_addr constant " + ((PointerType)this.type).baseType.typeName() + " c\"" + RePlace(this.value) + "\", align 1";
+    public String toString(){
+        return this.getName() + " = private unnamed_addr constant " + ((PointerType)this.type).baseType.toString() + " c\"" + RePlace(this.value) + "\", align 1";
     }
 
     @Override

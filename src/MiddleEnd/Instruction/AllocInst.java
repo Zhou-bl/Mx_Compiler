@@ -12,8 +12,8 @@ public class AllocInst extends IRInstruction{
     }
 
     @Override
-    public String generateIRCode(){
-        return this.getName() + " = alloc " + this.type.deReference().typeName() + ", align " + this.type.typeSize();
+    public String toString(){
+        return this.getName() + " = alloc " + this.type.deReference().toString() + ", align " + this.type.typeSize();
     }
 
     @Override

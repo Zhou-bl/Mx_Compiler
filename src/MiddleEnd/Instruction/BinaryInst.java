@@ -6,7 +6,7 @@ import MiddleEnd.IRVisitor;
 
 public class BinaryInst extends IRInstruction{
     public enum IRBinaryOpType{add, sub, mul, sdiv, srem, shl, ashr, and, or, xor, logic_and, logic_or, eq, ne, sgt, sge, slt, sle, assign}
-    //+,-,*,/,%,<<,>>,&,|,&&,||,==,!=,>,>=,<,<=,=
+    //+,-,*,/,%,<<,>>,&,|,^,&&,||,==,!=,>,>=,<,<=,=
     IRBinaryOpType opType;
 
     public BinaryInst(IRBasicBlock _paraBlock, IRBinaryOpType _op, Value _lop, Value _rop){
@@ -21,8 +21,8 @@ public class BinaryInst extends IRInstruction{
     }
 
     @Override
-    public String generateIRCode(){
-        return this.getName() + " = " + opType.name() + " " + this.type.typeName() + " " + this.getOperand(0).getName() + ", " + this.getOperand(1).getName();
+    public String toString(){
+        return this.getName() + " = " + opType.name() + " " + this.type.toString() + " " + this.getOperand(0).getName() + ", " + this.getOperand(1).getName();
     }
 
     @Override

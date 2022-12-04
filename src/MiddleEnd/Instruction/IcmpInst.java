@@ -18,7 +18,7 @@ public class IcmpInst extends IRInstruction{
     }
 
     @Override
-    public String generateIRCode(){
+    public String toString(){
         return this.getName() + " = " + this.opType.name() +
                 this.operands.get(0).getTypeAndName() + ", " + this.operands.get(1).getName();
     }

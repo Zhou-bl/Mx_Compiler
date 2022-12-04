@@ -3,6 +3,7 @@ package MiddleEnd.BasicClass;
 import MiddleEnd.TypePackage.IRType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Value {
     //参考llvm官方定义, Value表示一个具有类型的值
@@ -10,9 +11,25 @@ public class Value {
     public String name;
     public IRType type;
     public ArrayList<User> userList;
+    public static HashMap<String, Integer> renamingTable = new HashMap<>();
+
+    private String renaming(String _name){
+        String _resStr;
+        if(_name.equals("_f_main")){
+            _resStr = "main";
+            return _resStr;
+        }
+        Integer cnt = renamingTable.get(_name);
+        if (cnt == null){
+            cnt = 0;
+        } else cnt++;
+        renamingTable.put(_name, cnt);
+        _resStr = cnt == 0 ? _name : _name + cnt;
+        return _resStr;
+    }
 
     public Value(String _name, IRType _type){
-        this.name = _name;
+        this.name = renaming(_name);
         this.type = _type;
         this.userList = new ArrayList<>();
     }
@@ -27,7 +44,7 @@ public class Value {
     }
 
     public String getTypeAndName(){
-        return this.type.typeName() + " " + this.getName();
+        return this.type.toString() + " " + this.getName();
     }
 
     public String generateIRCode(){

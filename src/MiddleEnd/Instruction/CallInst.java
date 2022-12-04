@@ -20,7 +20,7 @@ public class CallInst extends IRInstruction{
     }
 
     @Override
-    public String generateIRCode(){
+    public String toString(){
         StringBuilder resStr = new StringBuilder();
         if(!(this.type instanceof VoidType)){
             resStr.append(this.getName()).append(" = ");

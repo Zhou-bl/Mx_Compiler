@@ -15,6 +15,7 @@ public class NullConstant extends IRConstant{
     }
 
     public void setType(IRType _type){
+        //null constant也必须指明是哪个类型的null指针
         this.type = _type;
     }
 
@@ -24,7 +25,7 @@ public class NullConstant extends IRConstant{
     }
 
     @Override
-    public String generateIRCode(){
+    public String toString(){
         throw new RuntimeException("ToString in NullConstant.");
     }
 

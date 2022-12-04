@@ -42,8 +42,8 @@ public class PointerType extends IRType{
     }
 
     @Override
-    public String typeName(){
-        return this.baseType.typeName() + "*".repeat(this.dim);
+    public String toString(){
+        return this.baseType.toString() + "*".repeat(this.dim);
     }
 
     @Override
