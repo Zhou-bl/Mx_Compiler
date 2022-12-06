@@ -28,22 +28,27 @@ public class SetBuiltIn {
         funcParameterList = new ArrayList<>();
         funcParameterList.add(new VarDefNode(new ClassTypeNode("int", new Position(-1, -1)), "n", null, new Position(-1, -1)));
         tmpFuncNode = new FuncDefNode(new VoidTypeNode(new Position(-1, -1)), "printInt", funcParameterList, null, new Position(-1, -1));
+        tmpFuncNode.isBuildIn = true;
         nameSpace.defineFunction("printInt", tmpFuncNode);
 
         //void printlnInt(int n):
         tmpFuncNode = new FuncDefNode(new VoidTypeNode(new Position(-1, -1)), "printlnInt", funcParameterList, null, new Position(-1, -1));
+        tmpFuncNode.isBuildIn = true;
         nameSpace.defineFunction("printlnInt", tmpFuncNode);
 
         //string getString():
         tmpFuncNode = new FuncDefNode(new ClassTypeNode("string", new Position(-1, -1)), "getString", null, null, new Position(-1, -1));
+        tmpFuncNode.isBuildIn = true;
         nameSpace.defineFunction("getString", tmpFuncNode);
 
         //int getInt():
         tmpFuncNode = new FuncDefNode(new ClassTypeNode("int", new Position(-1, -1)), "getInt", null, null, new Position(-1, -1));
+        tmpFuncNode.isBuildIn = true;
         nameSpace.defineFunction("getInt", tmpFuncNode);
 
         //string toString(int n);
         tmpFuncNode = new FuncDefNode(new ClassTypeNode("string", new Position(-1, -1)), "toString", funcParameterList, null, new Position(-1, -1));
+        tmpFuncNode.isBuildIn = true;
         nameSpace.defineFunction("toString", tmpFuncNode);
 
 
@@ -60,16 +65,19 @@ public class SetBuiltIn {
 
         //int length():
         tmpFuncNode = new FuncDefNode(new ClassTypeNode("int", new Position(-1, -1)), "length", null, null, new Position(-1, -1));
+        tmpFuncNode.isBuildIn = true;
         stringFuncScope.defineFunction("length", tmpFuncNode);
 
         //string substring(int left, int right):
         funcParameterList.add(new VarDefNode(new ClassTypeNode("int", new Position(-1, -1)), "left", null, new Position(-1 ,-1)));
         funcParameterList.add(new VarDefNode(new ClassTypeNode("int", new Position(-1 ,-1)), "right", null, new Position(-1, -1)));
         tmpFuncNode = new FuncDefNode(new ClassTypeNode("string", new Position(-1, -1)), "substring", funcParameterList, null, new Position(-1, -1));
+        tmpFuncNode.isBuildIn = true;
         stringFuncScope.defineFunction("substring", tmpFuncNode);
 
         //int parseInt():
         tmpFuncNode = new FuncDefNode(new ClassTypeNode("int", new Position(-1 ,-1)), "parseInt", null, null, new Position(-1,-1));
+        tmpFuncNode.isBuildIn = true;
         stringFuncScope.defineFunction("parseInt", tmpFuncNode);
 
         //int ord(int pos):
@@ -77,6 +85,7 @@ public class SetBuiltIn {
         funcParameterList.add(new VarDefNode(new ClassTypeNode("int", new Position(-1, -1)), "pos", null, new Position(-1, -1)));
         tmpFuncNode = new FuncDefNode(new ClassTypeNode("int", new Position(-1, -1)), "ord", funcParameterList, null, new Position(-1, -1));
         stringFuncScope.defineFunction("ord", tmpFuncNode);
+        tmpFuncNode.isBuildIn = true;
         nameSpace.defineClass("string", stringFuncScope);
         return nameSpace;
     }
