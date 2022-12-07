@@ -537,7 +537,7 @@ zext指令用于把高位填充0，然后转换为其他类型
 
 ## 为什么要用 LLVM IR
 
-从 Mx 转到 LLVM IR 的操作使得原来复杂的 AST 变为现在简单的树形结构，由于 `module` , `function` , `basicblock` 结构的限制，导致现在的 IRTree 最多只有三层高（其实看成 `basicblock` 构成的线性结构也是可以的）。因为从源代码到汇编的转化很难，所以需要中转一层，先转到 IR，一个弱线性结构的语言，再转到汇编就会简单很多，而且还便于优化。
+从 Mx 转到 LLVM IR 的操作使得原来复杂的 FrontEnd.Semantic.AST_Node 变为现在简单的树形结构，由于 `module` , `function` , `basicblock` 结构的限制，导致现在的 IRTree 最多只有三层高（其实看成 `basicblock` 构成的线性结构也是可以的）。因为从源代码到汇编的转化很难，所以需要中转一层，先转到 IR，一个弱线性结构的语言，再转到汇编就会简单很多，而且还便于优化。
 
 ## Builder实操
 

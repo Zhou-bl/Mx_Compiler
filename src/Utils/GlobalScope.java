@@ -1,10 +1,7 @@
 package Utils;
 
-import AST.FuncDefNode;
-import AST.TypeNode;
-import org.stringtemplate.v4.ST;
+import FrontEnd.Semantic.AST_Node.FuncDefNode;
 
-import java.lang.reflect.Type;
 import java.util.HashMap;
 
 public class GlobalScope extends Scope{

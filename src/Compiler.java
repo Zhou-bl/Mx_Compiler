@@ -1,10 +1,10 @@
-import AST.ASTBuilder;
-import AST.RootNode;
-import FrontEnd.SymbolCollector;
-import FrontEnd.SemChecker;
-import FrontEnd.SetBuiltIn;
-import MiddleEnd.Compound.IRModule;
-import MiddleEnd.IRBuilder;
+import FrontEnd.Semantic.AST_Node.ASTBuilder;
+import FrontEnd.Semantic.AST_Node.RootNode;
+import FrontEnd.Semantic.SymbolCollector;
+import FrontEnd.Semantic.SemChecker;
+import FrontEnd.Semantic.SetBuiltIn;
+import FrontEnd.LLVM_IR.Compound.IRModule;
+import FrontEnd.LLVM_IR.IRBuilder;
 import Parser.MxLexer;
 import Parser.MxParser;
 import Utils.GlobalScope;

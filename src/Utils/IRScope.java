@@ -1,6 +1,6 @@
 package Utils;
 
-import MiddleEnd.BasicClass.Value;
+import FrontEnd.LLVM_IR.BasicClass.Value;
 
 import java.util.HashMap;
 

@@ -1,6 +1,6 @@
 package Utils;
 
-import AST.TypeNode;
+import FrontEnd.Semantic.AST_Node.TypeNode;
 
 import java.util.HashMap;
 
