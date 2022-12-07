@@ -55,7 +55,7 @@ public class IRBuilder implements ASTVisitor {
         if(node instanceof IdentifierExprNode){
             String id = ((IdentifierExprNode) node).identifier;
             Value resValue = curScope.getValue(id);
-            if(curScope.isClass(id)){
+            if(curScope.isClassId(id)){
                 Value ptr = curScope.getValue("_this");
                 ptr = new LoadInst(curIRBlock, "_this", ptr);
                 resValue = new GepInst(curIRBlock, new PointerType(curClass.typeTable.get(id)), ptr);
@@ -67,10 +67,17 @@ public class IRBuilder implements ASTVisitor {
             ((ObjectPortionExprNode) node).baseObject.accept(this);
             Value baseAddress = ((ObjectPortionExprNode) node).baseObject.IROperand;
             StructType baseType = (StructType) baseAddress.type.deReference();
-            return new GepInst(curIRBlock, new PointerType((baseType.typeTable.get(((ObjectPortionExprNode) node).member))), baseAddress);
+            GepInst res = new GepInst(curIRBlock, new PointerType((baseType.typeTable.get(((ObjectPortionExprNode) node).member))), baseAddress);
+            res.addIndex(new IntConstant(0)).addIndex(new IntConstant(baseType.indexTable.get(((ObjectPortionExprNode) node).member)));
+            return res;
         }
         if(node instanceof ArrayAccessNode){
-            //todo
+            ((ArrayAccessNode) node).index.accept(this);
+            Value tmpIndex = ((ArrayAccessNode) node).index.IROperand;
+            Value tmpPtrAddress = getAddress(((ArrayAccessNode) node).array);//Type**
+            Value tmpPtr = new LoadInst(curIRBlock, "array", tmpPtrAddress);//Type*
+            GepInst res = new GepInst(curIRBlock, tmpPtr.type, tmpPtr);
+            return res.addIndex(tmpIndex);
         }
         if(node instanceof MonocularOpExprNode){
             return getAddress(((MonocularOpExprNode) node).operand);
@@ -230,6 +237,13 @@ public class IRBuilder implements ASTVisitor {
         funcTable.get(funcName).isUsed = true;
         res.addArg(lStr).addArg(rStr);
         return res;
+    }
+
+    private Value doArraySize(Value _address){
+        Value tmpPtr = new BitcastInst(curIRBlock, _address, new PointerType(new IntegerType(32)));
+        GepInst tmp = new GepInst(curIRBlock, new PointerType(new IntegerType(32)), tmpPtr);
+        tmp.addIndex(new IntConstant(-1));
+        return new LoadInst(curIRBlock, "array_size", tmp);
     }
 
     public IRBuilder(GlobalScope _globalScope, IRModule _module){
@@ -615,7 +629,23 @@ public class IRBuilder implements ASTVisitor {
             }
         }
         if(node.func instanceof ObjectPortionExprNode){
-            //todo : 成员函数的调用
+            ((ObjectPortionExprNode) node.func).baseObject.accept(this);
+            thisPtr = ((ObjectPortionExprNode) node.func).baseObject.IROperand;
+            if(((ObjectPortionExprNode) node.func).baseObject.exprType instanceof ArrayTypeNode){
+                //只有size函数
+                if(!((ObjectPortionExprNode) node.func).member.equals("size")){
+                    String s = ((ObjectPortionExprNode) node.func).member;
+                    throw new RuntimeException("[Bug] the wrong function: " + s);
+                }
+                node.IROperand = doArraySize(thisPtr);
+                return;
+            }
+            String classID; IRType classType = thisPtr.type.deReference();
+            if(classType instanceof StructType) classID = ((StructType) classType).name;
+            else {
+                classID = "class_string";
+            }
+            nodeFunc = funcTable.get("_" + classID + "_" + ((ObjectPortionExprNode) node.func).member);
         }
         if(nodeFunc == null){
             throw new RuntimeException("[Bug] node func is null.");
@@ -625,7 +655,6 @@ public class IRBuilder implements ASTVisitor {
             for(int i = 0; i < node.parameterListForCall.size(); ++i){
                 node.parameterListForCall.get(i).accept(this);
                 Value arg = node.parameterListForCall.get(i).IROperand;
-
                 reSetType(arg, ((FunctionType)nodeFunc.type).parameterTypeList.get(i));
                 node.parameterListForCall.get(i).IROperand = arg;
             }
@@ -696,7 +725,7 @@ public class IRBuilder implements ASTVisitor {
         Value nodeOperand = null;
         BinaryInst.IRBinaryOpType opType = toOpType(node.opSymbol);
         if(opType == BinaryInst.IRBinaryOpType.logic_and || opType == BinaryInst.IRBinaryOpType.logic_or){
-            //可能需要短路运算: 如果为Bool常量，可以直接算出结果; 如果是表达式则必须进行短路运算.
+            //可能需要短路运算的指令运算类型: 如果为Bool常量，可以直接算出结果; 如果是表达式则必须进行短路运算.
             node.leftOperand.accept(this);
             if(opType == BinaryInst.IRBinaryOpType.logic_and){
                 if(node.leftOperand.IROperand instanceof BoolConstant){
@@ -724,11 +753,13 @@ public class IRBuilder implements ASTVisitor {
         } else {
             node.rightOperand.accept(this);
             if(opType == BinaryInst.IRBinaryOpType.assign){
+                //赋值语句:把左操作数的Address取出,将新值存到左操作数的地址上.
                 Value tmpAddress = getAddress(node.leftOperand);
                 reSetType(node.rightOperand.IROperand, tmpAddress.type.deReference());
                 nodeOperand = node.rightOperand.IROperand;
                 new StoreInst(curIRBlock, nodeOperand, tmpAddress);
             } else {
+                //不是赋值操作:把结果存到新的地址上;
                 Value lop, rop;
                 node.leftOperand.accept(this);
                 lop = node.leftOperand.IROperand; rop = node.rightOperand.IROperand;

@@ -507,6 +507,12 @@ Struct 和 string 类型的 `<type>` 是指针.
 
 计算目标元素的位置（仅计算）。获得复合数据结构的子元素的位置。
 
+为什么需要额外的0索引：
+
+[The Often Misunderstood GEP Instruction - 简书 (jianshu.com)](https://www.jianshu.com/p/71beb2916186)
+
+![](source/img4.png)
+
 #### 11.Trunc指令与Zext指令
 
 这两个指令作用相反。

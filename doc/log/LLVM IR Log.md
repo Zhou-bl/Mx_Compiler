@@ -92,3 +92,17 @@
 
 ## 开始写 IRBuilder
 
+比较棘手的问题是
+
+1. 如何得到某node的地址？
+2. 如何进行new操作？
+
+### 取地址：
+
+专门由一个getAddress()用来获得某个Node的address，分为以下几种情况：
+
+1.为 Identifier：(1).id是class中的成员变量，那么先把this指针load出来，通过load指针的GepInst获取这个变量。(2).id不是class中的成员变量，那么直接从当前的scope中取出就行。
+
+2.为 OnjectPortion：先访问baseObject，获取baseObject的位置，通过baseObject的位置构造GepInst来access元素。
+
+3.为 ArrayAccess：获取数组的地址（数组是先通过开一个指向数据类型的指针来实现的，然后再new一些元素），所以我们获取的是一个二维指针，load这个二维指针，获得一维指针，然后根据这个指针构造GepInst指令计算要访问元素的位置。

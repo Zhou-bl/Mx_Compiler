@@ -35,13 +35,8 @@ public class IRScope {
         }
     }
 
-    public boolean isClass(String _id){
-        if(this.valueTable.containsKey(_id)){
-            return this.type == scopeType.Class;
-        } else {
-            if(this.parentScope == null) return false;
-            else return this.parentScope.isClass(_id);
-        }
+    public boolean isClassId(String _id){
+        return type == scopeType.Class && valueTable.get(_id) != null;
     }
 
     public void putValue(String _id, Value _op){

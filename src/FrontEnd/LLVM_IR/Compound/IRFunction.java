@@ -42,13 +42,15 @@ public class IRFunction extends User {
         //内置函数仅需要声明，非内置函数需要给出定义
         StringBuilder res = new StringBuilder();
         if(isBuiltin){
-            res.append("declare ").append(this.type.toString() + " ").append(this.getName() + "(");
-            for(int i = 0; i < ((FunctionType) this.type).parameterTypeList.size(); ++i){
-                IRType curi = ((FunctionType) this.type).parameterTypeList.get(i);
-                res.append(curi.toString()).append(", ");
+            if(isUsed) {
+                res.append("declare ").append(this.type.toString() + " ").append(this.getName() + "(");
+                for(int i = 0; i < ((FunctionType) this.type).parameterTypeList.size(); ++i){
+                    IRType curi = ((FunctionType) this.type).parameterTypeList.get(i);
+                    res.append(curi.toString()).append(", ");
+                }
+                if(((FunctionType) this.type).parameterTypeList.size() > 0) res.delete(res.length() - 2, res.length());
+                res.append(")\n");
             }
-            if(((FunctionType) this.type).parameterTypeList.size() > 0) res.delete(res.length() - 2, res.length());
-            res.append(")\n");
         } else {
             res.append("define ").append(this.type.toString() + " ").append(this.getName() + "(");
             for(int i = 0; i < operands.size(); ++i){

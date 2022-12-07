@@ -51,6 +51,10 @@ public class SetBuiltIn {
         tmpFuncNode.isBuildIn = true;
         nameSpace.defineFunction("toString", tmpFuncNode);
 
+        //void _malloc
+        tmpFuncNode = new FuncDefNode(new ClassTypeNode("string", new Position(-1, -1)), "_malloc", funcParameterList, null, new Position(-1, -1));
+        tmpFuncNode.isBuildIn = true;
+        nameSpace.defineFunction("_malloc", tmpFuncNode);
 
         //builtIn class:
         //bool:
@@ -74,6 +78,32 @@ public class SetBuiltIn {
         tmpFuncNode = new FuncDefNode(new ClassTypeNode("string", new Position(-1, -1)), "substring", funcParameterList, null, new Position(-1, -1));
         tmpFuncNode.isBuildIn = true;
         stringFuncScope.defineFunction("substring", tmpFuncNode);
+
+        //define string_operators:
+        funcParameterList = new ArrayList<>();
+        funcParameterList.add(new VarDefNode(new ClassTypeNode("string", new Position(-1, -1)), "str1", null, new Position(-1, -1)));
+        funcParameterList.add(new VarDefNode(new ClassTypeNode("string", new Position(-1, -1)), "str2", null, new Position(-1, -1)));
+
+        tmpFuncNode = new FuncDefNode(new ClassTypeNode("string", new Position(-1, -1)), "_str_splice", funcParameterList, null, new Position(-1, -1));
+        tmpFuncNode.isBuildIn = true; stringFuncScope.defineFunction("_str_splice", tmpFuncNode);
+
+        tmpFuncNode = new FuncDefNode(new ClassTypeNode("bool", new Position(-1, -1)), "_str_eq", funcParameterList, null, new Position(-1, -1));
+        tmpFuncNode.isBuildIn = true; stringFuncScope.defineFunction("_str_eq", tmpFuncNode);
+
+        tmpFuncNode = new FuncDefNode(new ClassTypeNode("bool", new Position(-1, -1)), "_str_ne", funcParameterList, null, new Position(-1, -1));
+        tmpFuncNode.isBuildIn = true; stringFuncScope.defineFunction("_str_ne", tmpFuncNode);
+
+        tmpFuncNode = new FuncDefNode(new ClassTypeNode("bool", new Position(-1, -1)), "_str_lt", funcParameterList, null, new Position(-1, -1));
+        tmpFuncNode.isBuildIn = true; stringFuncScope.defineFunction("_str_lt", tmpFuncNode);
+
+        tmpFuncNode = new FuncDefNode(new ClassTypeNode("bool", new Position(-1, -1)), "_str_le", funcParameterList, null, new Position(-1, -1));
+        tmpFuncNode.isBuildIn = true; stringFuncScope.defineFunction("_str_le", tmpFuncNode);
+
+        tmpFuncNode = new FuncDefNode(new ClassTypeNode("bool", new Position(-1, -1)), "_str_gt", funcParameterList, null, new Position(-1, -1));
+        tmpFuncNode.isBuildIn = true; stringFuncScope.defineFunction("_str_gt", tmpFuncNode);
+
+        tmpFuncNode = new FuncDefNode(new ClassTypeNode("bool", new Position(-1, -1)), "_str_ge", funcParameterList, null, new Position(-1, -1));
+        tmpFuncNode.isBuildIn = true; stringFuncScope.defineFunction("_str_ge", tmpFuncNode);
 
         //int parseInt():
         tmpFuncNode = new FuncDefNode(new ClassTypeNode("int", new Position(-1 ,-1)), "parseInt", null, null, new Position(-1,-1));
