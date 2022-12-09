@@ -10,7 +10,9 @@ import FrontEnd.LLVM_IR.Operand.*;
 import Utils.IRScope;
 import FrontEnd.LLVM_IR.TypePackage.*;
 import Utils.GlobalScope;
+import Utils.Position;
 
+import javax.swing.*;
 import java.util.*;
 
 public class IRBuilder implements ASTVisitor {
@@ -30,12 +32,13 @@ public class IRBuilder implements ASTVisitor {
 
     //global def linked_list:
     public LinkedList<VarDefNode> globalDefNodeList;
+    private Stack<ExprNode> arrayAllocSizeStack;
 
     //stack for loops:用来记录continue和break跳转到的basicBlock是哪一个
     private final Stack<IRBasicBlock> loopContinue;
     private final Stack<IRBasicBlock> loopBreak;
 
-    private IRType getType(TypeNode node){//通过node返回IRType,如果是arrayType那么type应该是pointerType
+    private IRType getIRType(TypeNode node){//通过node返回IRType,如果是arrayType那么type应该是pointerType
         if(node == null) return typeTable.get("void");
         IRType res = typeTable.get(node.typeID);
         if(node instanceof ArrayTypeNode){
@@ -45,7 +48,7 @@ public class IRBuilder implements ASTVisitor {
     }
 
     private Value getStringConstPtr(Value _value){
-        //targetType应该是指向char的一个指针类型:
+        //targetIRType应该是指向char的一个指针类型:
         GepInst ptr = new GepInst(curIRBlock, new PointerType(new IntegerType(8)), _value);
         ptr.addIndex(new IntConstant(0)).addIndex(new IntConstant(0));
         return ptr;
@@ -86,15 +89,22 @@ public class IRBuilder implements ASTVisitor {
         throw new RuntimeException("[Bug] getAddress wrong!");
     }
 
-    private AllocInst stackAlloc(IRType _type, String _name){
+    private AllocInst stackAlloca(IRType _type, String _name){
         //用于在函数的entry_block处进行alloc指令
         return new AllocInst(curIRFunction.getEntryBlock(), _type, _name);
     }
 
-    private void addControl(IRBasicBlock _conditionBlock, Value _condition, IRBasicBlock _trueBlock, IRBasicBlock _falseBlock){
+    private Value heapAlloca(IRType _malloc_type, Value _malloc_size){
+        String targetFuncName = "_malloc";
+        funcTable.get("_malloc").isUsed = true;
+        Value tmp = new CallInst(curIRBlock, funcTable.get("_malloc")).addArg(_malloc_size);
+        return new BitcastInst(curIRBlock, tmp, _malloc_type);
+    }
+
+    private void addControl(IRBasicBlock _curBlock, Value _condition, IRBasicBlock _trueBlock, IRBasicBlock _falseBlock){
         //包装Trunc指令和Branch指令，使调用更方便
-        Value _cond = new TruncInst(_conditionBlock, _condition, new IntegerType(1));
-        new BranchInst(_conditionBlock, _cond, _trueBlock, _falseBlock);
+        Value _cond = new TruncInst(_curBlock, _condition, new IntegerType(1));
+        new BranchInst(_curBlock, _cond, _trueBlock, _falseBlock);
     }
 
     private void reSetType(Value curValue, IRType targetType){
@@ -131,7 +141,7 @@ public class IRBuilder implements ASTVisitor {
 
     private Value doShortCircuit(BinaryExprNode node){
         BinaryInst.IRBinaryOpType opType = toOpType(node.opSymbol);
-        Value shortCircuitAddress = stackAlloc(new BoolType() , "sc_tmp_address_" + opType.toString());
+        Value shortCircuitAddress = stackAlloca(new BoolType() , "sc_tmp_address_" + opType.toString());
         Value lIROperand = node.leftOperand.IROperand;
         IRBasicBlock short_block = new IRBasicBlock("short_block", curIRFunction);
         IRBasicBlock long_block = new IRBasicBlock("long_block", curIRFunction);
@@ -246,6 +256,56 @@ public class IRBuilder implements ASTVisitor {
         return new LoadInst(curIRBlock, "array_size", tmp);
     }
 
+    private Value doArrayAlloc(IRType _malloc_type){
+        assert !arrayAllocSizeStack.empty();
+        IRType mallocType = _malloc_type.deReference();
+        ExprNode curSizeExpr = arrayAllocSizeStack.pop();
+        curSizeExpr.accept(this);
+        Value curSizeValue = curSizeExpr.IROperand;
+        Value realSize = new BinaryInst(curIRBlock, BinaryInst.IRBinaryOpType.mul, curSizeValue, new IntConstant(mallocType.typeSize()));
+        //总空间需要再加一个int的空间来记录size大小
+        Value mallocByteSize = new BinaryInst(curIRBlock, BinaryInst.IRBinaryOpType.add, realSize, new IntConstant(4));
+        Value mallocPointer = heapAlloca(new PointerType(new IntegerType(32)), mallocByteSize);
+        new StoreInst(curIRBlock, realSize, mallocPointer);//存放size的value;
+        //+1的offset之后的指针:
+        GepInst arrayPointer = new GepInst(curIRBlock, new PointerType(new IntegerType(32)), mallocPointer).addIndex(new IntConstant(1));
+        BitcastInst res = new BitcastInst(curIRBlock, arrayPointer, _malloc_type);
+        if(arrayAllocSizeStack.empty()) return res;
+        //写一个循环来为每一个维数组malloc空间:
+        IRBasicBlock allocConditionBlock = new IRBasicBlock("alloc_condition_bb", curIRFunction);
+        IRBasicBlock allocBodyBlock = new IRBasicBlock("alloc_body_bb", curIRFunction);
+        IRBasicBlock allocTerminalBlock = new IRBasicBlock(curIRFunction.name, curIRFunction);
+        AllocInst iter_ptr = stackAlloca(new IntegerType(32), "alloc_iter_ptr");//循环计数器
+        new BranchInst(curIRBlock, allocConditionBlock); curIRBlock = allocConditionBlock;
+        LoadInst iter_value = new LoadInst(curIRBlock, "alloc_iter_value", iter_ptr);
+        IcmpInst jumpFlag = new IcmpInst(curIRBlock, BinaryInst.IRBinaryOpType.ne, iter_value, curSizeValue);
+        addControl(curIRBlock, jumpFlag, allocBodyBlock, allocTerminalBlock); curIRBlock = allocBodyBlock;
+        GepInst cur_ptr = new GepInst(curIRBlock, _malloc_type, res).addIndex(iter_value);
+        new StoreInst(curIRBlock, doArrayAlloc(mallocType), cur_ptr);
+        BinaryInst iterValue_plus_1 = new BinaryInst(curIRBlock, BinaryInst.IRBinaryOpType.add, new IntConstant(1), iter_value);
+        new StoreInst(curIRBlock, iterValue_plus_1, iter_ptr);curIRBlock = allocTerminalBlock;new BranchInst(allocBodyBlock, curIRBlock);
+        return res;
+    }
+
+    private Value doNormalAlloc(AllocExprNode node){
+        //先申请空间，再调用构造函数
+        assert !node.isArray();
+        Value res;
+        String typeName = node.allocType.typeID;
+        StructType typeStruct = (StructType) typeTable.get(typeName).deReference();
+        //申请空间
+        res = heapAlloca(new PointerType(typeStruct), new IntConstant(typeStruct.typeSize()));
+        //调用构造函数,只有一个构造函数,有多个构造函数的情况为UB.
+        CallInst callConstruction = new CallInst(curIRBlock, funcTable.get("_" + typeStruct.name + "_" + typeName));
+        callConstruction.addArg(res);
+        return res;
+    }
+
+    private void visitGlobalDef(){
+        assert !globalDefNodeList.isEmpty();
+
+    }
+
     public IRBuilder(GlobalScope _globalScope, IRModule _module){
         this.globalScope = _globalScope;
         this.curScope = new IRScope(null, IRScope.scopeType.Global);
@@ -259,6 +319,7 @@ public class IRBuilder implements ASTVisitor {
         this.globalDefNodeList = new LinkedList<>();
         this.loopBreak = new Stack<>();
         this.loopContinue = new Stack<>();
+        this.arrayAllocSizeStack = new Stack<>();
     }
 
     @Override
@@ -278,10 +339,10 @@ public class IRBuilder implements ASTVisitor {
         for(Map.Entry<String, FuncDefNode> iter : globalScope.FunctionTable.entrySet()){//add non-member functions.
             String funcName = iter.getKey();
             FuncDefNode funcNode = iter.getValue();
-            FunctionType funcType = new FunctionType(getType(funcNode.functionType));
+            FunctionType funcType = new FunctionType(getIRType(funcNode.functionType));
             if(funcNode.parameterList != null){
                 for(int i = 0; i < funcNode.parameterList.size(); ++i){
-                    IRType paraType = getType(funcNode.parameterList.get(i).variableType);
+                    IRType paraType = getIRType(funcNode.parameterList.get(i).variableType);
                     String paraID = funcNode.parameterList.get(i).variableID;
                     funcType.addParameter(paraType, paraID);
                 }
@@ -298,20 +359,20 @@ public class IRBuilder implements ASTVisitor {
             IRType curType = typeTable.get(className).deReference();
             if(!className.equals("string")){
                 //add variable
-                classScope.VariableTable.forEach((ID, tmpTy) -> ((StructType)curType).addMember(ID, getType(tmpTy)));
+                classScope.VariableTable.forEach((ID, tmpTy) -> ((StructType)curType).addMember(ID, getIRType(tmpTy)));
             }
             for(Map.Entry<String, FuncDefNode> FuncIter : classScope.FunctionTable.entrySet()){
                 //add member function:
                 String funcName = FuncIter.getKey();
                 FuncDefNode funcNode = FuncIter.getValue();
-                IRType returnTy = getType(funcNode.functionType);
+                IRType returnTy = getIRType(funcNode.functionType);
                 FunctionType funcType = new FunctionType(returnTy);
                 IRType tmpArgTy = new PointerType(curType).deReference();
                 //添加 this 指针
                 funcType.addParameter(tmpArgTy, "_this");
                 if(funcNode.parameterList != null){
                     for(VarDefNode _tmp:funcNode.parameterList){
-                        tmpArgTy = getType(_tmp.variableType);
+                        tmpArgTy = getIRType(_tmp.variableType);
                         funcType.addParameter(tmpArgTy, _tmp.variableID);
                     }
                 }
@@ -334,6 +395,7 @@ public class IRBuilder implements ASTVisitor {
             }
         }
         node.elements.forEach(_ele -> _ele.accept(this));
+        if(!globalDefNodeList.isEmpty()) visitGlobalDef();
     }
 
     @Override
@@ -357,7 +419,7 @@ public class IRBuilder implements ASTVisitor {
         FunctionType funcType = (FunctionType) curIRFunction.type;//返回值转为funcType
         Value funcResValue;
         if(!funcType.toString().equals("void")){
-            curIRFunction.resAddress = stackAlloc(funcType.resType, "_return");
+            curIRFunction.resAddress = stackAlloca(funcType.resType, "_return");
             funcResValue = new LoadInst(curIRFunction.getReturnBlock(), "_return", curIRFunction.resAddress);
         } else {
             funcResValue = new Value("voidrestype", new VoidType());
@@ -371,7 +433,7 @@ public class IRBuilder implements ASTVisitor {
                 IRType tmpParaType = funcType.parameterTypeList.get(i);
                 Value tmpArg = new Value("_arg", tmpParaType);
                 curIRFunction.addOperand(tmpArg);
-                AllocInst localPara = stackAlloc(tmpParaType, tmpParaName);
+                AllocInst localPara = stackAlloca(tmpParaType, tmpParaName);
                 new StoreInst(curIRBlock, tmpArg, localPara);//把参数传到function本地的value中
                 curScope.putValue(tmpParaName, localPara);
             }
@@ -396,7 +458,7 @@ public class IRBuilder implements ASTVisitor {
     @Override
     public void visit(VarDefNode node){
         if(!curScope.isValid) return;
-        IRType curType = getType(node.variableType);
+        IRType curType = getIRType(node.variableType);
         Value curIRValue;
         if(curScope.parentScope == null){//global def:
             curIRValue = new GlobalDefInst(curType, node.variableID);
@@ -407,7 +469,7 @@ public class IRBuilder implements ASTVisitor {
                 globalDefNodeList.add(node);
             }
         } else {//local def:
-            curIRValue = stackAlloc(curType, node.variableID);
+            curIRValue = stackAlloca(curType, node.variableID);
             curScope.putValue(node.variableID, curIRValue);
             node.IROperand = curIRValue;
             if(node.initValue != null){
@@ -601,7 +663,16 @@ public class IRBuilder implements ASTVisitor {
 
     @Override
     public void visit(AllocExprNode node){
-        //todo:
+        if(!curScope.isValid) return;
+        Value nodeIROperand;
+        if(node.isArray()){
+            assert arrayAllocSizeStack.empty();
+            for(int i = node.sizeList.size() - 1; i >= 0; --i) arrayAllocSizeStack.push(node.sizeList.get(i));
+            nodeIROperand = doArrayAlloc(new PointerType(getIRType(node.allocType), node.dimSize));
+        } else {
+            nodeIROperand = doNormalAlloc(node);
+        }
+        node.IROperand = nodeIROperand;
     }
 
     @Override
