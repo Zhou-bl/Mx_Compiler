@@ -10,6 +10,7 @@ public class StringConstant extends IRConstant {
 
     public StringConstant(String _value){
         super("_str_constant", new PointerType(new ArrayType(new IntegerType(8), _value.length())));
+        //System.out.println("length is : " + _value.length());
         this.value = _value;
     }
 

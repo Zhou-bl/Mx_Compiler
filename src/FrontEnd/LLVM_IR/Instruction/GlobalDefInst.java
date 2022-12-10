@@ -17,7 +17,7 @@ public class GlobalDefInst extends IRInstruction{
     @Override
     public String toString(){
         return this.getName() + " = dso_local global " + this.type.deReference().toString()
-                + " zeroinitializer, align" + this.type.deReference().typeSize();
+                + " zeroinitializer, align " + this.type.deReference().typeSize();
     }
 
     @Override

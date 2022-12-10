@@ -12,6 +12,7 @@ public class IcmpInst extends IRInstruction{
         if(!_lop.type.isEqual(_rop.type)){
             throw new RuntimeException("Unequal type in IcmpInst.");
         }
+        this.opType = _opType;
         this.setBlock(_paraBlock);
         this.addOperand(_lop);
         this.addOperand(_rop);
@@ -19,7 +20,7 @@ public class IcmpInst extends IRInstruction{
 
     @Override
     public String toString(){
-        return this.getName() + " = " + this.opType.name() +
+        return this.getName() + " = icmp " + this.opType.name() + " " +
                 this.operands.get(0).getTypeAndName() + ", " + this.operands.get(1).getName();
     }
 

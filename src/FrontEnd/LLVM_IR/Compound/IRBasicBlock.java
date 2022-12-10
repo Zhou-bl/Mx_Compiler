@@ -15,11 +15,7 @@ public class IRBasicBlock extends Value {
     public IRFunction parentFunc;
 
     private void setTerminatorInst(IRInstruction _ins){
-        if(terminator != null){
-            System.out.println("[Bug] the terminator inst is not null!");
-            return;
-        }
-        terminator = _ins;
+        if(terminator == null) terminator = _ins;
     }
 
     public IRBasicBlock(String _name, IRFunction _parent){

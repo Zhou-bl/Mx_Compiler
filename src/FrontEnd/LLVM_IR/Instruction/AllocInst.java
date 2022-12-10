@@ -13,7 +13,7 @@ public class AllocInst extends IRInstruction{
 
     @Override
     public String toString(){
-        return this.getName() + " = alloc " + this.type.deReference().toString() + ", align " + this.type.typeSize();
+        return this.getName() + " = alloca " + this.type.deReference().toString() + ", align " + this.type.typeSize();
     }
 
     @Override

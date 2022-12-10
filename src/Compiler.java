@@ -49,7 +49,7 @@ public class Compiler {
             IRBuilder IRbuilder = new IRBuilder(globalScope, module);
             IRbuilder.visit(ASTRoot);
             output.println(module);//print ir
-
+            //module.printAllFunc();
         } catch (RuntimeException RuntimeError){
             System.err.println(RuntimeError.getMessage());
             throw new RuntimeException();

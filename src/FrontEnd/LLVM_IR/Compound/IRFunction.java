@@ -32,8 +32,8 @@ public class IRFunction extends User {
     }
 
     @Override
-    public void accept(IRVisitor visitor){
-        //todo
+    public String getName() {
+        return "@" + this.name;
     }
 
     @Override
@@ -62,5 +62,9 @@ public class IRFunction extends User {
             res.append("}\n");
         }
         return res.toString();
+    }
+    @Override
+    public void accept(IRVisitor visitor){
+        //todo
     }
 }

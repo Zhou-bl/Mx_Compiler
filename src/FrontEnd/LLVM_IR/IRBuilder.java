@@ -105,9 +105,10 @@ public class IRBuilder implements ASTVisitor {
         new BranchInst(_curBlock, _cond, _trueBlock, _falseBlock);
     }
 
-    private void reSetType(Value curValue, IRType targetType){
+    private Value reSetType(Value curValue, IRType targetType){
         if(curValue instanceof StringConstant) curValue = getStringConstPtr(curValue);
         if(curValue instanceof NullConstant) ((NullConstant) curValue).setType(targetType);
+        return curValue;
     }
 
     private BinaryInst.IRBinaryOpType toOpType(BinaryExprNode.BinaryOpType op){
@@ -318,7 +319,7 @@ public class IRBuilder implements ASTVisitor {
                 curNode.initValue.accept(this);
                 init_value = curNode.initValue.IROperand;
             }
-            reSetType(init_value, value_IRType);
+            init_value = reSetType(init_value, value_IRType);
             new StoreInst(curIRBlock, init_value, value_address);
             new BranchInst(curIRBlock, exit_block); curIRBlock = exit_block;
             new RetInst(curIRBlock, new Value("voidrestype", new VoidType())); curIRBlock = global_all_bb;
@@ -500,7 +501,7 @@ public class IRBuilder implements ASTVisitor {
             if(node.initValue != null){
                 node.initValue.accept(this);
                 Value curInitValue = node.initValue.IROperand;
-                reSetType(curInitValue, curType);
+                curInitValue = reSetType(curInitValue, curType);
                 new StoreInst(curIRBlock, curInitValue, curIRValue);
             } else {
                 if(node.variableType instanceof ArrayTypeNode){
@@ -710,6 +711,8 @@ public class IRBuilder implements ASTVisitor {
         if(node.func instanceof IdentifierExprNode){
             boolean isMemberFunction = false;
             String funcName = ((IdentifierExprNode) node.func).identifier;
+            String debuger = "println";
+
             if(curClass != null){
                 nodeFunc =  funcTable.get("_" + curClass.name + "_" + funcName);
             }
@@ -751,7 +754,7 @@ public class IRBuilder implements ASTVisitor {
             for(int i = 0; i < node.parameterListForCall.size(); ++i){
                 node.parameterListForCall.get(i).accept(this);
                 Value arg = node.parameterListForCall.get(i).IROperand;
-                reSetType(arg, ((FunctionType)nodeFunc.type).parameterTypeList.get(i));
+                arg = reSetType(arg, ((FunctionType)nodeFunc.type).parameterTypeList.get(i));
                 node.parameterListForCall.get(i).IROperand = arg;
             }
         }
@@ -851,7 +854,7 @@ public class IRBuilder implements ASTVisitor {
             if(opType == BinaryInst.IRBinaryOpType.assign){
                 //赋值语句:把左操作数的Address取出,将新值存到左操作数的地址上.
                 Value tmpAddress = getAddress(node.leftOperand);
-                reSetType(node.rightOperand.IROperand, tmpAddress.type.deReference());
+                node.rightOperand.IROperand = reSetType(node.rightOperand.IROperand, tmpAddress.type.deReference());
                 nodeOperand = node.rightOperand.IROperand;
                 new StoreInst(curIRBlock, nodeOperand, tmpAddress);
             } else {
@@ -869,7 +872,7 @@ public class IRBuilder implements ASTVisitor {
                     } else {
                         switch (opType) {
                             case eq, ne, sgt, sge, slt, sle -> {
-                                reSetType(rop, lop.type);
+                                rop = reSetType(rop, lop.type);
                                 IcmpInst tmpInst = new IcmpInst(curIRBlock, opType, lop, rop);
                                 nodeOperand = new ZextInst(curIRBlock, tmpInst, new BoolType());
                             }

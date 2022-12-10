@@ -8,7 +8,7 @@ public class StringConstantExprNode extends ExprNode{
     public StringConstantExprNode(String _value, Position _pos){
         super(_pos);
         this.value = _value.substring(1, _value.length() - 1).replace("\\\\", "\\")
-                .replace("\\n", "\n").replace("\\t", "\t").replace("\\\"", "\"");
+                .replace("\\n", "\n").replace("\\t", "\t").replace("\\\"", "\"") + "\0";
         this.exprType = new ClassTypeNode("string", _pos);
     }
 

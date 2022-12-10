@@ -24,7 +24,7 @@ public class Value {
             cnt = 0;
         } else cnt++;
         renamingTable.put(_name, cnt);
-        _resStr = cnt == 0 ? _name : _name + cnt;
+        _resStr = _name + cnt;
         return _resStr;
     }
 

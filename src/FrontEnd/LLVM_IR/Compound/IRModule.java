@@ -37,6 +37,13 @@ public class IRModule {
         this.globalInitList.add(_ele);
     }
 
+    public void printAllFunc(){
+        for(int i = 0; i < functionArrayList.size() - 1; ++i){
+            String funcName = functionArrayList.get(i).name;
+            System.out.println(funcName);
+        }
+    }
+
     @Override
     public String toString(){
         StringBuilder res = new StringBuilder();
@@ -62,7 +69,7 @@ public class IRModule {
         }
         //global init
         if(globalInitList.size() > 0)
-            res.append("@llvm.global_ctors = appending global [1 x { i32, void ()*, i8* }] [{ i32, void ()*, i8* } { i32 65535, void ()* @_GLOBAL_, i8* null }]").append("\n");
+            res.append("@llvm.global_ctors = appending global [1 x { i32, void ()*, i8* }] [{ i32, void ()*, i8* } { i32 65535, void ()* @Global_init0, i8* null }]").append("\n");
         for(int i = 0; i < globalInitList.size(); ++i){
             res.append(globalInitList.get(i).toString());
         }
