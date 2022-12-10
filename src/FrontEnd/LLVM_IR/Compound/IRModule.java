@@ -33,6 +33,10 @@ public class IRModule {
         this.globalDefArrayList.add(_newGlobalDef);
     }
 
+    public void addGlobalInit(IRFunction _ele){
+        this.globalInitList.add(_ele);
+    }
+
     @Override
     public String toString(){
         StringBuilder res = new StringBuilder();
@@ -57,13 +61,15 @@ public class IRModule {
             res.append(curi.toString()).append("\n");
         }
         //global init
+        if(globalInitList.size() > 0)
+            res.append("@llvm.global_ctors = appending global [1 x { i32, void ()*, i8* }] [{ i32, void ()*, i8* } { i32 65535, void ()* @_GLOBAL_, i8* null }]").append("\n");
         for(int i = 0; i < globalInitList.size(); ++i){
-            //todo
+            res.append(globalInitList.get(i).toString());
         }
         //function def:
         for(int i = 0; i < functionArrayList.size(); ++i){
             IRFunction curi = functionArrayList.get(i);
-            res.append(curi.toString()).append("\n");
+            res.append(curi.toString());
         }
         return res.toString();
     }

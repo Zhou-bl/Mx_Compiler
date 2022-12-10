@@ -10,15 +10,13 @@ import FrontEnd.LLVM_IR.Operand.*;
 import Utils.IRScope;
 import FrontEnd.LLVM_IR.TypePackage.*;
 import Utils.GlobalScope;
-import Utils.Position;
-
-import javax.swing.*;
 import java.util.*;
 
 public class IRBuilder implements ASTVisitor {
     //name space:
     public GlobalScope globalScope;
     public IRScope curScope;
+    public IRScope global_IRScope;
     //current position:
     public IRModule targetModule;
     public IRFunction curIRFunction;
@@ -303,12 +301,39 @@ public class IRBuilder implements ASTVisitor {
 
     private void visitGlobalDef(){
         assert !globalDefNodeList.isEmpty();
-
+        IRType res_type = new FunctionType(new VoidType());
+        IRFunction global_all = new IRFunction("Global_init", res_type);
+        IRBasicBlock global_all_bb = new IRBasicBlock("global_all_bb", global_all);
+        for(int i = 0; i < globalDefNodeList.size(); ++i){
+            VarDefNode curNode = globalDefNodeList.get(i);
+            IRFunction global_init_single = new IRFunction("global_init_" + curNode.variableID, res_type);
+            IRBasicBlock entry_block = new IRBasicBlock(curNode.variableID + "_entry_bb", global_init_single);
+            IRBasicBlock exit_block = new IRBasicBlock(curNode.variableID + "_exit_bb", global_init_single);
+            Value init_value;
+            IRType value_IRType = getIRType(curNode.variableType);
+            Value value_address = global_IRScope.getValue(curNode.variableID);
+            curIRBlock = entry_block;
+            if(curNode.initValue == null) init_value = new NullConstant();
+            else {
+                curNode.initValue.accept(this);
+                init_value = curNode.initValue.IROperand;
+            }
+            reSetType(init_value, value_IRType);
+            new StoreInst(curIRBlock, init_value, value_address);
+            new BranchInst(curIRBlock, exit_block); curIRBlock = exit_block;
+            new RetInst(curIRBlock, new Value("voidrestype", new VoidType())); curIRBlock = global_all_bb;
+            CallInst callSingleInitFunc = new CallInst(curIRBlock, global_init_single);
+            targetModule.addGlobalInit(global_init_single);
+        }
+        curIRBlock = global_all_bb;
+        new RetInst(curIRBlock, new Value("voidrestype", new VoidType()));
+        targetModule.addGlobalInit(global_all);
     }
 
     public IRBuilder(GlobalScope _globalScope, IRModule _module){
         this.globalScope = _globalScope;
         this.curScope = new IRScope(null, IRScope.scopeType.Global);
+        this.global_IRScope = this.curScope;
         this.targetModule = _module;
         this.curIRBlock = null;
         this.curClass = null;
