@@ -101,6 +101,7 @@ public class IRBuilder implements ASTVisitor {
 
     private void addControl(IRBasicBlock _curBlock, Value _condition, IRBasicBlock _trueBlock, IRBasicBlock _falseBlock){
         //包装Trunc指令和Branch指令，使调用更方便
+        assert !_condition.type.isEqual(new IntegerType(1));
         Value _cond = new TruncInst(_curBlock, _condition, new IntegerType(1));
         new BranchInst(_curBlock, _cond, _trueBlock, _falseBlock);
     }
@@ -160,9 +161,9 @@ public class IRBuilder implements ASTVisitor {
         return new LoadInst(curIRBlock, "sc_terminal_address", shortCircuitAddress);
     }
 
-    private IRConstant calculateConst(BinaryExprNode node){
+    private IRConstant calculateConst(BinaryExprNode node, IRConstant lop, IRConstant rop){
         BinaryInst.IRBinaryOpType op = toOpType(node.opSymbol);
-        IRConstant lop = (IRConstant) node.leftOperand.IROperand, rop = (IRConstant) node.rightOperand.IROperand, res;
+        IRConstant res;
         switch (op) {
             case add, sub, mul, sdiv, srem, shl, ashr, and, or, xor, logic_and, logic_or -> {
                 //计算指令
@@ -226,10 +227,9 @@ public class IRBuilder implements ASTVisitor {
         return res;
     }
 
-    private Value calculateString(BinaryExprNode node){
+    private Value calculateString(BinaryExprNode node, Value _lStr, Value _rStr){
         BinaryInst.IRBinaryOpType op = toOpType(node.opSymbol);
-        Value  lStr = node.leftOperand.IROperand, rStr = node.rightOperand.IROperand;
-        assert lStr.type.isEqual(new PointerType(new IntegerType(8))) && rStr.type.isEqual(new PointerType(new IntegerType(8)));
+        assert _lStr.type.isEqual(new PointerType(new IntegerType(8))) && _rStr.type.isEqual(new PointerType(new IntegerType(8)));
         CallInst res;
         String funcName;
         switch (op) {
@@ -244,7 +244,7 @@ public class IRBuilder implements ASTVisitor {
         }
         res = new CallInst(curIRBlock, funcTable.get(funcName));
         funcTable.get(funcName).isUsed = true;
-        res.addArg(lStr).addArg(rStr);
+        res.addArg(_lStr).addArg(_rStr);
         return res;
     }
 
@@ -260,12 +260,13 @@ public class IRBuilder implements ASTVisitor {
         IRType mallocType = _malloc_type.deReference();
         ExprNode curSizeExpr = arrayAllocSizeStack.pop();
         curSizeExpr.accept(this);
+        //数组的元素数即:size()返回的值:
         Value curSizeValue = curSizeExpr.IROperand;
         Value realSize = new BinaryInst(curIRBlock, BinaryInst.IRBinaryOpType.mul, curSizeValue, new IntConstant(mallocType.typeSize()));
         //总空间需要再加一个int的空间来记录size大小
         Value mallocByteSize = new BinaryInst(curIRBlock, BinaryInst.IRBinaryOpType.add, realSize, new IntConstant(4));
         Value mallocPointer = heapAlloca(new PointerType(new IntegerType(32)), mallocByteSize);
-        new StoreInst(curIRBlock, realSize, mallocPointer);//存放size的value;
+        new StoreInst(curIRBlock, curSizeValue, mallocPointer);//存放size的value;
         //+1的offset之后的指针:
         GepInst arrayPointer = new GepInst(curIRBlock, new PointerType(new IntegerType(32)), mallocPointer).addIndex(new IntConstant(1));
         BitcastInst res = new BitcastInst(curIRBlock, arrayPointer, _malloc_type);
@@ -275,10 +276,11 @@ public class IRBuilder implements ASTVisitor {
         IRBasicBlock allocBodyBlock = new IRBasicBlock("alloc_body_bb", curIRFunction);
         IRBasicBlock allocTerminalBlock = new IRBasicBlock(curIRFunction.name, curIRFunction);
         AllocInst iter_ptr = stackAlloca(new IntegerType(32), "alloc_iter_ptr");//循环计数器
+        new StoreInst(curIRBlock, new IntConstant(0), iter_ptr);
         new BranchInst(curIRBlock, allocConditionBlock); curIRBlock = allocConditionBlock;
         LoadInst iter_value = new LoadInst(curIRBlock, "alloc_iter_value", iter_ptr);
         IcmpInst jumpFlag = new IcmpInst(curIRBlock, BinaryInst.IRBinaryOpType.ne, iter_value, curSizeValue);
-        addControl(curIRBlock, jumpFlag, allocBodyBlock, allocTerminalBlock); curIRBlock = allocBodyBlock;
+        new BranchInst(curIRBlock, jumpFlag, allocBodyBlock, allocTerminalBlock); curIRBlock = allocBodyBlock;
         GepInst cur_ptr = new GepInst(curIRBlock, _malloc_type, res).addIndex(iter_value);
         new StoreInst(curIRBlock, doArrayAlloc(mallocType), cur_ptr);
         BinaryInst iterValue_plus_1 = new BinaryInst(curIRBlock, BinaryInst.IRBinaryOpType.add, new IntConstant(1), iter_value);
@@ -314,6 +316,7 @@ public class IRBuilder implements ASTVisitor {
             IRType value_IRType = getIRType(curNode.variableType);
             Value value_address = global_IRScope.getValue(curNode.variableID);
             curIRBlock = entry_block;
+            curIRFunction = global_init_single;
             if(curNode.initValue == null) init_value = new NullConstant();
             else {
                 curNode.initValue.accept(this);
@@ -393,7 +396,7 @@ public class IRBuilder implements ASTVisitor {
                 FuncDefNode funcNode = FuncIter.getValue();
                 IRType returnTy = getIRType(funcNode.functionType);
                 FunctionType funcType = new FunctionType(returnTy);
-                IRType tmpArgTy = new PointerType(curType).deReference();
+                IRType tmpArgTy = new PointerType(curType);
                 //添加 this 指针
                 funcType.addParameter(tmpArgTy, "_this");
                 if(funcNode.parameterList != null){
@@ -404,11 +407,13 @@ public class IRBuilder implements ASTVisitor {
                 }
                 IRFunction _newMemberFunc = new IRFunction("_class_"+ className + "_" + funcName, funcType);
                 if(funcNode.isBuildIn) _newMemberFunc.isBuiltin = true;
-                funcTable.put(_newMemberFunc.name, _newMemberFunc);
+                funcTable.put("_class_"+ className + "_" + funcName, _newMemberFunc);
                 targetModule.addFunction(_newMemberFunc);
             }
             //添加默认构造函数
-            if(!className.equals("string") && funcTable.get("_class" + className + "_" + className) == null){
+
+            if(!className.equals("string") && funcTable.get("_class_" + className + "_" + className) == null){
+                //System.out.println("_class" + className + "_" + className);
                 FunctionType funcType = new FunctionType(new VoidType());
                 IRType tmpArgType = new PointerType(curType);
                 funcType.addParameter(tmpArgType, "_this");
@@ -416,7 +421,7 @@ public class IRBuilder implements ASTVisitor {
                 defaultConstructionFunc.addOperand(new Value("_arg", tmpArgType));
                 IRBasicBlock newBlock = new IRBasicBlock(defaultConstructionFunc.name, defaultConstructionFunc);
                 new RetInst(newBlock, new Value("voidrestype", new VoidType()));
-                funcTable.put(defaultConstructionFunc.name, defaultConstructionFunc);
+                funcTable.put("_class_" + className + "_" + className, defaultConstructionFunc);
                 targetModule.addFunction(defaultConstructionFunc);
             }
         }
@@ -453,7 +458,7 @@ public class IRBuilder implements ASTVisitor {
         new RetInst(curIRFunction.getReturnBlock(), funcResValue);//这里设置
         curIRBlock = curIRFunction.getEntryBlock();
         //add parameters into entryBlock:
-        if(node.parameterList != null){
+        if(funcType.parameterNameList != null){
             for(int i = 0; i < funcType.parameterNameList.size(); ++i){
                 String tmpParaName = funcType.parameterNameList.get(i);
                 IRType tmpParaType = funcType.parameterTypeList.get(i);
@@ -569,7 +574,7 @@ public class IRBuilder implements ASTVisitor {
         new BranchInst(curIRBlock, conditionBlock);
         curIRBlock = conditionBlock;
         node.condition.accept(this);
-        addControl(conditionBlock, node.condition.IROperand, whileBodyBlock, terminalBlock);
+        addControl(curIRBlock, node.condition.IROperand, whileBodyBlock, terminalBlock);
         if(node.loopBody != null){
             curIRBlock = whileBodyBlock;
             node.loopBody.accept(this);
@@ -593,11 +598,11 @@ public class IRBuilder implements ASTVisitor {
         IRBasicBlock forBodyBlock = new IRBasicBlock("for_body_bb", curIRFunction);
         IRBasicBlock terminalBlock = new IRBasicBlock(curIRFunction.name, curIRFunction);
         //add control flows:
-        loopContinue.push(incrBlock);
-        loopBreak.push(terminalBlock);
         if(node.init != null){
             node.init.accept(this);
         }
+        loopContinue.push(incrBlock);
+        loopBreak.push(terminalBlock);
         new BranchInst(curIRBlock, conditionBlock);
         curIRBlock = conditionBlock;
         if(node.condition != null){
@@ -607,20 +612,32 @@ public class IRBuilder implements ASTVisitor {
         else {
             new BranchInst(curIRBlock, forBodyBlock);
         }
-        curIRBlock = incrBlock;
+        curIRBlock = forBodyBlock;
+        if(node.loopBody != null){
+            node.loopBody.accept(this);
+        }
+        new BranchInst(curIRBlock, incrBlock); curIRBlock = incrBlock;
+        if(node.incrExpr != null){
+            node.incrExpr.accept(this);
+        }
+        new BranchInst(curIRBlock, conditionBlock);
+        curIRBlock = terminalBlock;
+        loopContinue.pop();
+        loopBreak.pop();
+        curScope = curScope.upRoot();
+
+        /*
         if(node.incrExpr != null){
             node.incrExpr.accept(this);
         }
         new BranchInst(curIRBlock, conditionBlock);
         curIRBlock = forBodyBlock;
-        if(node.loopBody != null){
-            node.loopBody.accept(this);
-        }
+
         new BranchInst(curIRBlock, incrBlock);
         curIRBlock = terminalBlock;
-        loopContinue.pop();
-        loopBreak.pop();
+
         curScope = curScope.upRoot();
+        */
     }
 
     @Override
@@ -769,7 +786,7 @@ public class IRBuilder implements ASTVisitor {
     public void visit(ArrayAccessNode node){
         if(!curScope.isValid) return;
         Value targetAddress = getAddress(node);
-        node.IROperand = new LoadInst(curIRBlock, "_array", targetAddress);
+        node.IROperand = new LoadInst(curIRBlock, "array", targetAddress);
     }
 
     @Override
@@ -864,11 +881,11 @@ public class IRBuilder implements ASTVisitor {
                 lop = node.leftOperand.IROperand; rop = node.rightOperand.IROperand;
                 if(lop instanceof StringConstant) lop = getStringConstPtr(lop);
                 if(rop instanceof StringConstant) rop = getStringConstPtr(rop);
-                if(lop instanceof IRConstant && rop instanceof IRConstant) nodeOperand = calculateConst(node);
-                else{//非常量做为运算数的情形
+                if(lop instanceof IRConstant && rop instanceof IRConstant) nodeOperand = calculateConst(node, (IRConstant) lop, (IRConstant) rop);
+                else{//非常量作为运算数的情形
                     if(lop.type.isEqual(new PointerType(new IntegerType(8)))){
                         //string 类型作为操作数
-                        nodeOperand = calculateString(node);
+                        nodeOperand = calculateString(node, lop, rop);
                     } else {
                         switch (opType) {
                             case eq, ne, sgt, sge, slt, sle -> {

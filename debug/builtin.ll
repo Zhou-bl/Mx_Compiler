@@ -61,7 +61,7 @@ define dso_local i8* @_f_toString0(i32 %0) #0 {
   %2 = alloca i32, align 4
   %3 = alloca i8*, align 8
   store i32 %0, i32* %2, align 4
-  %4 = call noalias i8* @malloc(i64 20) #5
+  %4 = call noalias i8* @malloc(i64 12) #5
   store i8* %4, i8** %3, align 8
   %5 = load i8*, i8** %3, align 8
   %6 = load i32, i32* %2, align 4
@@ -98,7 +98,7 @@ define dso_local i8* @_f__malloc0(i32 %0) #0 {
 }
 
 ; Function Attrs: noinline nounwind optnone uwtable
-define dso_local i32 @_class_string__str_ne0(i8* %0, i8* %1) #0 {
+define dso_local zeroext i1 @_f__str_ne0(i8* %0, i8* %1) #0 {
   %3 = alloca i8*, align 8
   %4 = alloca i8*, align 8
   store i8* %0, i8** %3, align 8
@@ -107,15 +107,14 @@ define dso_local i32 @_class_string__str_ne0(i8* %0, i8* %1) #0 {
   %6 = load i8*, i8** %4, align 8
   %7 = call i32 @strcmp(i8* %5, i8* %6) #6
   %8 = icmp ne i32 %7, 0
-  %9 = zext i1 %8 to i32
-  ret i32 %9
+  ret i1 %8
 }
 
 ; Function Attrs: nounwind readonly
 declare dso_local i32 @strcmp(i8*, i8*) #3
 
 ; Function Attrs: noinline nounwind optnone uwtable
-define dso_local i32 @_class_string__str_eq0(i8* %0, i8* %1) #0 {
+define dso_local zeroext i1 @_f__str_eq0(i8* %0, i8* %1) #0 {
   %3 = alloca i8*, align 8
   %4 = alloca i8*, align 8
   store i8* %0, i8** %3, align 8
@@ -124,12 +123,11 @@ define dso_local i32 @_class_string__str_eq0(i8* %0, i8* %1) #0 {
   %6 = load i8*, i8** %4, align 8
   %7 = call i32 @strcmp(i8* %5, i8* %6) #6
   %8 = icmp eq i32 %7, 0
-  %9 = zext i1 %8 to i32
-  ret i32 %9
+  ret i1 %8
 }
 
 ; Function Attrs: noinline nounwind optnone uwtable
-define dso_local i32 @_class_string__str_le0(i8* %0, i8* %1) #0 {
+define dso_local zeroext i1 @__f__str_le0(i8* %0, i8* %1) #0 {
   %3 = alloca i8*, align 8
   %4 = alloca i8*, align 8
   store i8* %0, i8** %3, align 8
@@ -138,12 +136,11 @@ define dso_local i32 @_class_string__str_le0(i8* %0, i8* %1) #0 {
   %6 = load i8*, i8** %4, align 8
   %7 = call i32 @strcmp(i8* %5, i8* %6) #6
   %8 = icmp sle i32 %7, 0
-  %9 = zext i1 %8 to i32
-  ret i32 %9
+  ret i1 %8
 }
 
 ; Function Attrs: noinline nounwind optnone uwtable
-define dso_local i32 @_class_string__str_lt0(i8* %0, i8* %1) #0 {
+define dso_local zeroext i1 @_f__str_lt0(i8* %0, i8* %1) #0 {
   %3 = alloca i8*, align 8
   %4 = alloca i8*, align 8
   store i8* %0, i8** %3, align 8
@@ -152,12 +149,11 @@ define dso_local i32 @_class_string__str_lt0(i8* %0, i8* %1) #0 {
   %6 = load i8*, i8** %4, align 8
   %7 = call i32 @strcmp(i8* %5, i8* %6) #6
   %8 = icmp slt i32 %7, 0
-  %9 = zext i1 %8 to i32
-  ret i32 %9
+  ret i1 %8
 }
 
 ; Function Attrs: noinline nounwind optnone uwtable
-define dso_local i32 @_class_string__str_ge0(i8* %0, i8* %1) #0 {
+define dso_local zeroext i1 @_f__str_ge0(i8* %0, i8* %1) #0 {
   %3 = alloca i8*, align 8
   %4 = alloca i8*, align 8
   store i8* %0, i8** %3, align 8
@@ -166,12 +162,11 @@ define dso_local i32 @_class_string__str_ge0(i8* %0, i8* %1) #0 {
   %6 = load i8*, i8** %4, align 8
   %7 = call i32 @strcmp(i8* %5, i8* %6) #6
   %8 = icmp sge i32 %7, 0
-  %9 = zext i1 %8 to i32
-  ret i32 %9
+  ret i1 %8
 }
 
 ; Function Attrs: noinline nounwind optnone uwtable
-define dso_local i32 @_class_string__str_gt0(i8* %0, i8* %1) #0 {
+define dso_local zeroext i1 @_f__str_gt0(i8* %0, i8* %1) #0 {
   %3 = alloca i8*, align 8
   %4 = alloca i8*, align 8
   store i8* %0, i8** %3, align 8
@@ -180,9 +175,43 @@ define dso_local i32 @_class_string__str_gt0(i8* %0, i8* %1) #0 {
   %6 = load i8*, i8** %4, align 8
   %7 = call i32 @strcmp(i8* %5, i8* %6) #6
   %8 = icmp sgt i32 %7, 0
-  %9 = zext i1 %8 to i32
-  ret i32 %9
+  ret i1 %8
 }
+
+; Function Attrs: noinline nounwind optnone uwtable
+define dso_local i8* @_f__str_splice0(i8* %0, i8* %1) #0 {
+  %3 = alloca i8*, align 8
+  %4 = alloca i8*, align 8
+  %5 = alloca i8*, align 8
+  store i8* %0, i8** %3, align 8
+  store i8* %1, i8** %4, align 8
+  %6 = load i8*, i8** %3, align 8
+  %7 = call i64 @strlen(i8* %6) #6
+  %8 = load i8*, i8** %4, align 8
+  %9 = call i64 @strlen(i8* %8) #6
+  %10 = add i64 %7, %9
+  %11 = add i64 %10, 1
+  %12 = mul i64 1, %11
+  %13 = call noalias i8* @malloc(i64 %12) #5
+  store i8* %13, i8** %5, align 8
+  %14 = load i8*, i8** %5, align 8
+  %15 = load i8*, i8** %3, align 8
+  %16 = call i8* @strcpy(i8* %14, i8* %15) #5
+  %17 = load i8*, i8** %5, align 8
+  %18 = load i8*, i8** %4, align 8
+  %19 = call i8* @strcat(i8* %17, i8* %18) #5
+  %20 = load i8*, i8** %5, align 8
+  ret i8* %20
+}
+
+; Function Attrs: nounwind readonly
+declare dso_local i64 @strlen(i8*) #3
+
+; Function Attrs: nounwind
+declare dso_local i8* @strcpy(i8*, i8*) #2
+
+; Function Attrs: nounwind
+declare dso_local i8* @strcat(i8*, i8*) #2
 
 ; Function Attrs: noinline nounwind optnone uwtable
 define dso_local i32 @_class_string_length0(i8* %0) #0 {
@@ -193,9 +222,6 @@ define dso_local i32 @_class_string_length0(i8* %0) #0 {
   %5 = trunc i64 %4 to i32
   ret i32 %5
 }
-
-; Function Attrs: nounwind readonly
-declare dso_local i64 @strlen(i8*) #3
 
 ; Function Attrs: noinline nounwind optnone uwtable
 define dso_local i32 @_class_string_ord0(i8* %0, i32 %1) #0 {
@@ -215,41 +241,14 @@ define dso_local i32 @_class_string_ord0(i8* %0, i32 %1) #0 {
 ; Function Attrs: noinline nounwind optnone uwtable
 define dso_local i32 @_class_string_parseInt0(i8* %0) #0 {
   %2 = alloca i8*, align 8
-  %3 = alloca i32, align 4
-  %4 = alloca i32, align 4
   store i8* %0, i8** %2, align 8
-  store i32 0, i32* %3, align 4
-  store i32 0, i32* %4, align 4
-  br label %5
-
-5:                                                ; preds = %13, %1
-  %6 = load i8*, i8** %2, align 8
-  %7 = load i32, i32* %4, align 4
-  %8 = sext i32 %7 to i64
-  %9 = getelementptr inbounds i8, i8* %6, i64 %8
-  %10 = load i8, i8* %9, align 1
-  %11 = sext i8 %10 to i32
-  %12 = icmp ne i32 %11, 0
-  br i1 %12, label %13, label %24
-
-13:                                               ; preds = %5
-  %14 = load i32, i32* %3, align 4
-  %15 = mul nsw i32 %14, 10
-  %16 = load i8*, i8** %2, align 8
-  %17 = load i32, i32* %4, align 4
-  %18 = sext i32 %17 to i64
-  %19 = getelementptr inbounds i8, i8* %16, i64 %18
-  %20 = load i8, i8* %19, align 1
-  %21 = sext i8 %20 to i32
-  %22 = add nsw i32 %15, %21
-  %23 = sub nsw i32 %22, 48
-  store i32 %23, i32* %3, align 4
-  br label %5
-
-24:                                               ; preds = %5
-  %25 = load i32, i32* %3, align 4
-  ret i32 %25
+  %3 = load i8*, i8** %2, align 8
+  %4 = call i32 @atoi(i8* %3) #6
+  ret i32 %4
 }
+
+; Function Attrs: nounwind readonly
+declare dso_local i32 @atoi(i8*) #3
 
 ; Function Attrs: noinline nounwind optnone uwtable
 define dso_local i8* @_class_string_substring0(i8* %0, i32 %1, i32 %2) #0 {
@@ -291,38 +290,6 @@ define dso_local i8* @_class_string_substring0(i8* %0, i32 %1, i32 %2) #0 {
 
 ; Function Attrs: argmemonly nounwind willreturn
 declare void @llvm.memcpy.p0i8.p0i8.i64(i8* noalias nocapture writeonly, i8* noalias nocapture readonly, i64, i1 immarg) #4
-
-; Function Attrs: noinline nounwind optnone uwtable
-define dso_local i8* @_class_string_splice0(i8* %0, i8* %1) #0 {
-  %3 = alloca i8*, align 8
-  %4 = alloca i8*, align 8
-  %5 = alloca i8*, align 8
-  store i8* %0, i8** %3, align 8
-  store i8* %1, i8** %4, align 8
-  %6 = load i8*, i8** %3, align 8
-  %7 = call i64 @strlen(i8* %6) #6
-  %8 = load i8*, i8** %4, align 8
-  %9 = call i64 @strlen(i8* %8) #6
-  %10 = add i64 %7, %9
-  %11 = add i64 %10, 1
-  %12 = mul i64 1, %11
-  %13 = call noalias i8* @malloc(i64 %12) #5
-  store i8* %13, i8** %5, align 8
-  %14 = load i8*, i8** %5, align 8
-  %15 = load i8*, i8** %3, align 8
-  %16 = call i8* @strcpy(i8* %14, i8* %15) #5
-  %17 = load i8*, i8** %5, align 8
-  %18 = load i8*, i8** %4, align 8
-  %19 = call i8* @strcat(i8* %17, i8* %18) #5
-  %20 = load i8*, i8** %5, align 8
-  ret i8* %20
-}
-
-; Function Attrs: nounwind
-declare dso_local i8* @strcpy(i8*, i8*) #2
-
-; Function Attrs: nounwind
-declare dso_local i8* @strcat(i8*, i8*) #2
 
 attributes #0 = { noinline nounwind optnone uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "frame-pointer"="all" "less-precise-fpmad"="false" "min-legal-vector-width"="0" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #1 = { "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "frame-pointer"="all" "less-precise-fpmad"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }

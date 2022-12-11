@@ -13,6 +13,7 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 
@@ -20,6 +21,9 @@ public class Compiler {
     public static void main(String[] args) throws Exception{
         InputStream input = System.in;
         PrintStream output = System.out;
+        String destFile = "debug/test.ll";
+        FileOutputStream fos = new FileOutputStream(destFile);
+        boolean file_output_flag = true;
         try{
             MxLexer lexer = new MxLexer(CharStreams.fromStream(input));
             lexer.removeErrorListeners();
@@ -48,7 +52,12 @@ public class Compiler {
             IRModule module = new IRModule();
             IRBuilder IRbuilder = new IRBuilder(globalScope, module);
             IRbuilder.visit(ASTRoot);
-            output.println(module);//print ir
+            if(file_output_flag) {
+                byte[] moduleText = module.toString().getBytes();
+                fos.write(moduleText);
+            } else {
+                output.println(module);//print ir
+            }
             //module.printAllFunc();
         } catch (RuntimeException RuntimeError){
             System.err.println(RuntimeError.getMessage());

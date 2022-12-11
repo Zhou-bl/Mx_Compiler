@@ -14,6 +14,7 @@ public class Value {
     public static HashMap<String, Integer> renamingTable = new HashMap<>();
 
     private String renaming(String _name){
+        if(_name.equals("null")) return "null";
         String _resStr;
         if(_name.equals("_f_main")){
             _resStr = "main";
@@ -47,7 +48,4 @@ public class Value {
         return this.type.toString() + " " + this.getName();
     }
 
-    public String generateIRCode(){
-        throw new RuntimeException("Can't transfer basic type value to string.");
-    }
 }

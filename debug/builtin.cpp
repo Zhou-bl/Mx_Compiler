@@ -1,56 +1,97 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-void _f_print0(char *str) { printf("%s", str); }
-
-void _f_println0(char *str) { printf("%s\n", str); }
-
-void _f_printInt0(int n) { printf("%d", n); }
-
-void _f_printlnInt0(int n) { printf("%d\n", n); }
-
-int _f_getInt0() {
-  int n;
-  scanf("%d", &n);
-  return n;
+#include<bits/stdc++.h>
+using namespace std;
+void _f_print0(char* str_1){
+	printf("%s",str_1);
 }
-
-char *_f_getString0() {
-  char *str = malloc(sizeof(char) * 256);
-  scanf("%s", str);
-  return str;
+void _f_print0(char* str_2){
+	printf("%s\n",str_2);
 }
-
-char *_f_toString0(int n) {
-  char *str = malloc(20);
-  sprintf(str, "%d", n);
-  return str;
+void _f_printInt0(int n_1){
+	printf("%d",n_1);
 }
-
-char *_f_malloc0(int mallocSize) { return malloc(mallocSize); }
-
-char *_f_string_substring0(char *str, int start, int end) {
-  char *substr = malloc(sizeof(char) * (end - start + 1));
-  memcpy(substr, str + start, end - start);
-  substr[end - start] = '\0';
-  return substr;
+void f_printlnInt_1(int n_2){
+	printf("%d\n",n_2);
 }
-
-int _string_length0(char *str) { return strlen(str); }
-
-int _string_parseInt0(char *str) {
-  int n;
-  sscanf(str, "%d", &n);
-  return n;
+char* f_getString_1(){
+	string str;
+	cin>>str;
+	char *str2=new char[strlen(str.c_str())+1];
+	strcpy(str2,str.c_str());
+	char *p=&str2[0];
+	return p;
 }
-
-int _string_ord0(char *str, int index) { return str[index]; }
-
-char *_string_concat0(char *str1, char *str2) {
-  char *str = malloc(sizeof(char) * (strlen(str1) + strlen(str2) + 1));
-  strcpy(str, str1);
-  strcat(str, str2);
-  // sprintf(str, "%s%s", str1, str2);
-  return str;
+int f_getInt_1(){
+	int a;
+	scanf("%d",&a);
+	return a;
+}
+char* f_toString_1(int i_1){
+	string str;
+	int flag=0;
+	if(i_1==0){
+		char *str2=new char[2];
+		str2[0]='0',str2[1]='\0';
+		return &str2[0];
+	}
+	if(i_1<0)flag=1,i_1=-i_1;
+	while(i_1){
+		str+=(char)(i_1%10+'0');
+		i_1/=10;
+	}
+	if(flag)str+=char('-');
+	char *str2=new char[strlen(str.c_str())+1];
+	strcpy(str2,str.c_str());
+	int size=strlen(str2);
+	for(int i=(size-1)/2;i>=0;i--)swap(str2[i],str2[size-i-1]);
+	return &str2[0];
+}
+bool _stringcmp_eq_1(char* str1_1,char* str2_1){
+	return strcmp(str1_1,str2_1)==0;
+}
+bool _stringcmp_neq_1(char* str1_2,char* str2_2){
+	return strcmp(str1_2,str2_2)!=0;
+}
+bool _stringcmp_less_1(char* str1_3,char* str2_3){
+	return strcmp(str1_3,str2_3)<0;
+}
+bool _stringcmp_greater_1(char* str1_4,char* str2_4){
+	return strcmp(str1_4,str2_4)>0;
+}
+bool _stringcmp_leq_1(char* str1_5,char* str2_5){
+	return strcmp(str1_5,str2_5)<=0;
+}
+bool _stringcmp_geq_1(char* str1_6,char* str2_6){
+	return strcmp(str1_6,str2_6)>=0;
+}
+int _string_length_1(char* str_3){
+	int x=0;
+	while(str_3[x]!='\0')x++;
+	return x;
+}
+char* _string_merge_1(char* str1_7,char* str2_7){
+	int len1=_string_length_1(str1_7),len2=_string_length_1(str2_7);
+	char* str=new char[len1+len2+1];
+	for(int i=0;i<len1;i++)str[i]=str1_7[i];
+	for(int i=0;i<len2;i++)str[len1+i]=str2_7[i];
+	str[len1+len2]='\0';
+	return str;
+}
+char* _heap_malloc_1(int n_3){
+	return (char*)malloc(n_3);
+}
+char* _string_substring_1(char* str_4,int l_1,int r_1){
+	char* str=new char[r_1-l_1];
+	for(int i=l_1;i<r_1;i++)str[i-l_1]=str_4[i];
+	return str;
+}
+int _string_parseInt_1(char* str_5){
+	int ans=0,i=0;
+	while(str_5[i]!='\0'){
+		ans=ans*10+str_5[i]-'0';
+		i++;
+	}
+	return ans;
+}
+int _string_ord_1(char* str_6,int ord_1){
+	return (int)str_6[ord_1];
 }

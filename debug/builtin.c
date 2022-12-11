@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 int _f_getInt0(){
     int n;
     scanf("%d", &n);
@@ -14,7 +15,7 @@ void _f_println0(char *str){ printf("%s\n", str); }
 void _f_printInt0(int n){ printf("%d", n); }
 void _f_printlnInt0(int n){ printf("%d\n", n); }
 char *_f_toString0(int n){
-    char *str = malloc(20);
+    char *str = malloc(12);
     sprintf(str, "%d", n);
     return str;
 }
@@ -24,18 +25,23 @@ char *_f_getString0(){
     return str;
 }
 char *_f__malloc0(int mallocSize){ return malloc(mallocSize); }
-int _class_string__str_ne0(char* left, char* right){return strcmp(left, right) != 0;}
-int _class_string__str_eq0(char* left, char* right){return strcmp(left, right) == 0;}
-int _class_string__str_le0(char* left, char* right){return strcmp(left, right) <= 0;}
-int _class_string__str_lt0(char* left, char* right){return strcmp(left, right) < 0;}
-int _class_string__str_ge0(char* left, char* right){return strcmp(left, right) >= 0;}
-int _class_string__str_gt0(char* left, char* right){return strcmp(left, right) > 0;}
+bool _f__str_ne0(char* left, char* right){return strcmp(left, right) != 0;}
+bool _f__str_eq0(char* left, char* right){return strcmp(left, right) == 0;}
+bool __f__str_le0(char* left, char* right){return strcmp(left, right) <= 0;}
+bool _f__str_lt0(char* left, char* right){return strcmp(left, right) < 0;}
+bool _f__str_ge0(char* left, char* right){return strcmp(left, right) >= 0;}
+bool _f__str_gt0(char* left, char* right){return strcmp(left, right) > 0;}
+char* _f__str_splice0(char* str1, char* str2){
+    char *splice_str = malloc(sizeof (char) * (strlen(str1) + strlen(str2) + 1));
+    strcpy(splice_str, str1);
+    strcat(splice_str, str2);
+    return splice_str;
+}
+
 int _class_string_length0(char* str){return strlen(str);}
 int _class_string_ord0(char* str, int pos){return (int)str[pos];}
 int _class_string_parseInt0(char* str){
-    int res = 0, i = 0;
-    while(str[i] != '\0'){res = res * 10 + str[i] - '0';}
-    return res;
+    return atoi(str);
 }
 char* _class_string_substring0(char* str, int l, int r){
     char *substr = malloc(sizeof (char) * (r - l + 1));
@@ -43,12 +49,7 @@ char* _class_string_substring0(char* str, int l, int r){
     substr[r - l] = '\0';
     return substr;
 }
-char* _class_string_splice0(char* str1, char* str2){
-    char *splice_str = malloc(sizeof (char) * (strlen(str1) + strlen(str2) + 1));
-    strcpy(splice_str, str1);
-    strcat(splice_str, str2);
-    return splice_str;
-}
+
 /*
 //_f_getInt0
 //_f_print0
