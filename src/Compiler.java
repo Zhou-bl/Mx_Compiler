@@ -21,9 +21,9 @@ public class Compiler {
     public static void main(String[] args) throws Exception{
         InputStream input = System.in;
         PrintStream output = System.out;
-        String destFile = "debug/test.ll";
-        FileOutputStream fos = new FileOutputStream(destFile);
-        boolean file_output_flag = true;
+        //String destFile = "debug/test.ll";
+        //FileOutputStream fos = new FileOutputStream(destFile);
+        boolean file_output_flag = false;
         try{
             MxLexer lexer = new MxLexer(CharStreams.fromStream(input));
             lexer.removeErrorListeners();
@@ -54,7 +54,7 @@ public class Compiler {
             IRbuilder.visit(ASTRoot);
             if(file_output_flag) {
                 byte[] moduleText = module.toString().getBytes();
-                fos.write(moduleText);
+                //fos.write(moduleText);
             } else {
                 output.println(module);//print ir
             }

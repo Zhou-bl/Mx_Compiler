@@ -284,7 +284,9 @@ public class IRBuilder implements ASTVisitor {
         GepInst cur_ptr = new GepInst(curIRBlock, _malloc_type, res).addIndex(iter_value);
         new StoreInst(curIRBlock, doArrayAlloc(mallocType), cur_ptr);
         BinaryInst iterValue_plus_1 = new BinaryInst(curIRBlock, BinaryInst.IRBinaryOpType.add, new IntConstant(1), iter_value);
-        new StoreInst(curIRBlock, iterValue_plus_1, iter_ptr);curIRBlock = allocTerminalBlock;new BranchInst(allocBodyBlock, curIRBlock);
+        new StoreInst(curIRBlock, iterValue_plus_1, iter_ptr);
+        new BranchInst(curIRBlock, allocConditionBlock);
+        curIRBlock = allocTerminalBlock;
         return res;
     }
 
