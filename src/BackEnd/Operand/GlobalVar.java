@@ -8,7 +8,7 @@ public class GlobalVar extends BasicOperand{
         val = _val;
     }
 
-    public String toString(){
+    public String printCode(){
         StringBuilder res = new StringBuilder();
         if(val == null){
             res.append('\t').append(".type").append('\t').append(getName()).append(",@object\n");

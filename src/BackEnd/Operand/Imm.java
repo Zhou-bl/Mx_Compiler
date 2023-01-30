@@ -10,6 +10,10 @@ public class Imm extends BasicOperand{
         value = _value;
     }
 
+    public Imm getReverse(){
+        return new Imm(-value);
+    }
+
     public String toString(){
         return String.valueOf(value);
     }
