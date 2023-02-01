@@ -1,5 +1,6 @@
 package FrontEnd.LLVM_IR.BasicClass;
 
+import BackEnd.Operand.BasicOperand;
 import FrontEnd.LLVM_IR.TypePackage.IRType;
 
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ public class Value {
     //llvm::Value 有一个 llvm::Type* 成员和一个 User list 跟踪哪些Value使用了自己
     public String name;
     public IRType type;
+    public BasicOperand ASMOperand;
     public ArrayList<User> userList;
     public static HashMap<String, Integer> renamingTable = new HashMap<>();
 

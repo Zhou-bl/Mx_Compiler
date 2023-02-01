@@ -8,6 +8,11 @@ public class GlobalVar extends BasicOperand{
         val = _val;
     }
 
+    public GlobalVar(String _name){
+        super(_name);
+        val = null;
+    }
+
     public String printCode(){
         StringBuilder res = new StringBuilder();
         if(val == null){

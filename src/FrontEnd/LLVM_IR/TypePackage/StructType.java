@@ -27,6 +27,14 @@ public class StructType extends IRType{
         this.typeSize += _value.typeSize();
     }
 
+    public int getOffset(int index){
+        int ans = 0;
+        for(int i = 0;i < index;++i){
+            ans += typeList.get(i).typeSize();
+        }
+        return ans;
+    }
+
     @Override
     public int typeSize(){
         return typeSize;

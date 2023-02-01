@@ -7,7 +7,7 @@ import FrontEnd.LLVM_IR.IRVisitor;
 public class BinaryInst extends IRInstruction{
     public enum IRBinaryOpType{add, sub, mul, sdiv, srem, shl, ashr, and, or, xor, logic_and, logic_or, eq, ne, sgt, sge, slt, sle, assign}
     //+,-,*,/,%,<<,>>,&,|,^,&&,||,==,!=,>,>=,<,<=,=
-    IRBinaryOpType opType;
+    public IRBinaryOpType opType;
 
     public BinaryInst(IRBasicBlock _paraBlock, IRBinaryOpType _op, Value _lop, Value _rop){
         super(_op.name(), _lop.type);
