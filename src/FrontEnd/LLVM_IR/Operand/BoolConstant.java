@@ -23,6 +23,6 @@ public class BoolConstant extends IRConstant{
 
     @Override
     public void accept(IRVisitor visitor){
-        //todo
+        visitor.visit(this);
     }
 }

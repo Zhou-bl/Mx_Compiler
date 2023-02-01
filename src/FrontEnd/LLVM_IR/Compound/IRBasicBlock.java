@@ -48,6 +48,6 @@ public class IRBasicBlock extends Value {
     }
 
     public void accept(IRVisitor visitor){
-        //todo
+        visitor.visit(this);
     }
 }

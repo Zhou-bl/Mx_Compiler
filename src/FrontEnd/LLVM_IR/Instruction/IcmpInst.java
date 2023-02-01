@@ -26,6 +26,6 @@ public class IcmpInst extends IRInstruction{
 
     @Override
     public void accept(IRVisitor visitor){
-        //todo
+        visitor.visit(this);
     }
 }

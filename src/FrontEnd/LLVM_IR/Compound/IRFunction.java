@@ -65,6 +65,6 @@ public class IRFunction extends User {
     }
     @Override
     public void accept(IRVisitor visitor){
-        //todo
+        visitor.visit(this);
     }
 }

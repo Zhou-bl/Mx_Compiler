@@ -25,6 +25,6 @@ public class RetInst extends IRInstruction {
 
     @Override
     public void accept(IRVisitor visitor){
-        //todo
+        visitor.visit(this);
     }
 }

@@ -22,6 +22,6 @@ public class StoreInst extends IRInstruction {
 
     @Override
     public void accept(IRVisitor visitor){
-        //todo
+        visitor.visit(this);
     }
 }
