@@ -1,3 +1,5 @@
+import BackEnd.ASMBuilder;
+import BackEnd.RegAlloc.StackAlloc;
 import FrontEnd.Semantic.AST_Node.ASTBuilder;
 import FrontEnd.Semantic.AST_Node.RootNode;
 import FrontEnd.Semantic.SymbolCollector;
@@ -7,6 +9,7 @@ import FrontEnd.LLVM_IR.Compound.IRModule;
 import FrontEnd.LLVM_IR.IRBuilder;
 import Parser.MxLexer;
 import Parser.MxParser;
+import Utils.BuiltinPrinter;
 import Utils.GlobalScope;
 import Utils.MxErrorListener;
 import org.antlr.v4.runtime.CharStreams;
@@ -23,7 +26,7 @@ public class Compiler {
         PrintStream output = System.out;
         //String destFile = "debug/test.ll";
         //FileOutputStream fos = new FileOutputStream(destFile);
-        boolean file_output_flag = false;
+        boolean file_output_flag = true;
         try{
             MxLexer lexer = new MxLexer(CharStreams.fromStream(input));
             lexer.removeErrorListeners();
@@ -52,13 +55,38 @@ public class Compiler {
             IRModule module = new IRModule();
             IRBuilder IRbuilder = new IRBuilder(globalScope, module);
             IRbuilder.visit(ASTRoot);
+
+            /*
             if(file_output_flag) {
                 byte[] moduleText = module.toString().getBytes();
                 //fos.write(moduleText);
             } else {
                 output.println(module);//print ir
             }
+            */
+
             //module.printAllFunc();
+            ASMBuilder ASMbuilder = new ASMBuilder();
+            ASMbuilder.visit(module);
+            StackAlloc regAlloc = new StackAlloc(ASMbuilder.targetModule);
+            regAlloc.process();
+
+
+
+            if(file_output_flag) {
+                //文件输出:
+                output = new PrintStream("output.s");
+                output.println(ASMbuilder.targetModule.printCode());
+                BuiltinPrinter builtinPrinter = new BuiltinPrinter();
+                output = new PrintStream("builtin.s");
+                output.println(builtinPrinter.builtinCode);
+            } else {
+                System.out.println(ASMbuilder.targetModule.printCode());
+            }
+
+
+
+
         } catch (RuntimeException RuntimeError){
             System.err.println(RuntimeError.getMessage());
             throw new RuntimeException();

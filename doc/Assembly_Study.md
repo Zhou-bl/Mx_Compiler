@@ -1,5 +1,15 @@
 # Assembly_Study
 
+## 编译参数
+
+```shell
+clang -S a.c --target=riscv32 -march=rv32im //由a.c生成riscv32的汇编代码a.s
+
+clang -S a.ll --target=riscv32 -march=rv32im //由a.ll生成riscv32的汇编代码a.s
+```
+
+
+
 首先，一张图说明不同语言之间的关系，越往上的语言越高级，越往下越底层。
 
 ![](source/language.png)

@@ -51,7 +51,7 @@ public class ArithInstruction extends ASM_Instruction{
     public String printCode(){
         String printOp = op, res = "";
         if(rs2 instanceof Imm) printOp += "i";
-        res = printOp + "\t" + rd.getName() + rs1.getName();
+        res = printOp + "\t" + rd.getName() + ", "+ rs1.getName() + ", ";
         if(rs2 instanceof Imm) res += rs2;
         else res += rs1.getName();
         return res;

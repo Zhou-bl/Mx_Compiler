@@ -92,9 +92,44 @@ public class StackAlloc {
         for(int i = 0; i < curFunc.blockArrayList.size(); ++i){
             ASMBlock curBlock = curFunc.blockArrayList.get(i);
             ListIterator<ASM_Instruction> curInstIter = curBlock.instructionList.listIterator();
+            //注意这里不能写这样的循环，因为有插入指令的过程导致size会一直变化:
+            /*
             for(int j = 0; j < curBlock.instructionList.size(); ++j){
                 ASM_Instruction curInstruction = curBlock.instructionList.get(j);
                 curInstIter.next(); //指向当前元素
+                //先把 rs1, rs2 从内存中load出来
+                if(curInstruction.rs1 instanceof VirtualRegister rs1){
+                    if(rs1.color != 32){
+                        curInstruction.rs1 = new PhysicalRegister(rs1);
+                    } else {
+                        int regOffset = getVirtualRegOffset(rs1.getName());
+                        curInstruction.rs1 = new PhysicalRegister(rs1, 6);
+                        loadRsReg(curInstIter, "t1", regOffset);
+                    }
+                }
+                if(curInstruction.rs2 instanceof VirtualRegister rs2){
+                    if(rs2.color != 32){
+                        curInstruction.rs2 = new PhysicalRegister(rs2);
+                    } else {
+                        int regOffset = getVirtualRegOffset(rs2.getName());
+                        curInstruction.rs2 = new PhysicalRegister(rs2, 7);
+                        loadRsReg(curInstIter, "t2", regOffset);
+                    }
+                }
+                //在当前指令后面添加把 rd 寄存器的值重新写回 内存 的指令
+                if(curInstruction.rd instanceof VirtualRegister rd){
+                    if(rd.color != 32){
+                        curInstruction.rd = new PhysicalRegister(rd);
+                    } else {
+                        int regOffset = getVirtualRegOffset(rd.getName());
+                        curInstruction.rd = new PhysicalRegister(rd, 5);
+                        storeRdValue(curInstIter, "t0", regOffset);
+                    }
+                }
+            }
+             */
+            while(curInstIter.hasNext()){
+                ASM_Instruction curInstruction = curInstIter.next();
                 //先把 rs1, rs2 从内存中load出来
                 if(curInstruction.rs1 instanceof VirtualRegister rs1){
                     if(rs1.color != 32){
