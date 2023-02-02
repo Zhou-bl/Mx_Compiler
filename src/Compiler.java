@@ -80,7 +80,7 @@ public class Compiler {
             if(file_output_flag) {
                 //文件输出:
                 output = new PrintStream("output.s");
-                output.println(ASMbuilder.targetModule.printCode());
+                output.println(regAlloc.targetModule.printCode());
                 BuiltinPrinter builtinPrinter = new BuiltinPrinter();
                 output = new PrintStream("builtin.s");
                 output.println(builtinPrinter.builtinCode);

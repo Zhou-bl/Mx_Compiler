@@ -183,7 +183,7 @@ public class ASMBuilder implements IRVisitor {
 
     @Override
     public void visit(AllocInst node){
-        //pointer is 8 byte:
+        //pointer is 4 byte:
         node.ASMOperand = new VirtualRegister(curFunction.virtualIndex++, 8, curFunction.allocStack().getReverse());
     }
 
@@ -295,8 +295,7 @@ public class ASMBuilder implements IRVisitor {
             Register curArgReg = null;
             if(src instanceof Imm){
                 //立即数作为参数,先load imm 再store到内存中:
-                //todo
-                curArgReg = new VirtualRegister(curFunction.virtualIndex++);
+                curArgReg = new VirtualRegister(curFunction.virtualIndex);
                 new LiInstruction(curBlock).addOperand(curArgReg, src);
             } else {
                 //src instance of register:
@@ -341,10 +340,12 @@ public class ASMBuilder implements IRVisitor {
             tmpValue = new VirtualRegister(curFunction.virtualIndex++);
             new LiInstruction(curBlock).addOperand(tmpValue, value);
         } else {
-            //value is Register
-            Register tmpReg = new VirtualRegister(curFunction.virtualIndex++);
-            new LoadInstruction(curBlock, "lw").addOperand(tmpReg, value);
-            tmpValue = tmpReg;
+            //tmpValue is Register
+            if(((Register) tmpValue).inMem){
+                Register tmpReg = new VirtualRegister(curFunction.virtualIndex++);
+                new LoadInstruction(curBlock, "lw").addOperand(tmpReg, value);
+                tmpValue = tmpReg;
+            }
         }
 
         if(address instanceof Register){

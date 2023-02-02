@@ -46,7 +46,7 @@ public class ASMFunction extends BasicOperand {
 
     public String printCode(){
         StringBuilder res = new StringBuilder();
-        res.append('\t').append(".global").append('\t').append(getName()).append('\n');
+        res.append('\t').append(".globl").append('\t').append(getName()).append('\n');
         res.append('\t').append(".p2align").append('\t').append('\t').append(1).append('\n');
         res.append('\t').append(".type").append('\t').append(getName()).append(",@function\n");
         res.append(getName()).append(':').append('\n');

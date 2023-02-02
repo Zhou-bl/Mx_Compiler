@@ -37,7 +37,8 @@ char* _f__str_splice0(char* str1, char* str2){
 int _class_string_length0(char* str){return strlen(str);}
 int _class_string_ord0(char* str, int pos){return (int)str[pos];}
 int _class_string_parseInt0(char* str){
-    return atoi(str);
+    //return atoi(str);
+    return sprintf(str,"%d",str);
 }
 char* _class_string_substring0(char* str, int l, int r){
     char *substr = malloc(sizeof (char) * (r - l + 1));

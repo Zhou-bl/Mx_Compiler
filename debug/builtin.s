@@ -407,7 +407,11 @@ _class_string_parseInt0:                # @_class_string_parseInt0
 	addi	s0, sp, 16
 	sw	a0, -12(s0)
 	lw	a0, -12(s0)
-	call	atoi
+	lui	a1, %hi(.L.str)
+	addi	a1, a1, %lo(.L.str)
+	sw	a0, -16(s0)
+	lw	a2, -16(s0)
+	call	sprintf
 	lw	s0, 8(sp)
 	lw	ra, 12(sp)
 	addi	sp, sp, 16
@@ -489,4 +493,3 @@ _class_string_substring0:               # @_class_string_substring0
 	.addrsig_sym strlen
 	.addrsig_sym strcpy
 	.addrsig_sym strcat
-	.addrsig_sym atoi

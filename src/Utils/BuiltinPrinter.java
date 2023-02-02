@@ -410,7 +410,11 @@ public class BuiltinPrinter {
             "\taddi\ts0, sp, 16\n" +
             "\tsw\ta0, -12(s0)\n" +
             "\tlw\ta0, -12(s0)\n" +
-            "\tcall\tatoi\n" +
+            "\tlui\ta1, %hi(.L.str)\n" +
+            "\taddi\ta1, a1, %lo(.L.str)\n" +
+            "\tsw\ta0, -16(s0)\n" +
+            "\tlw\ta2, -16(s0)\n" +
+            "\tcall\tsprintf\n" +
             "\tlw\ts0, 8(sp)\n" +
             "\tlw\tra, 12(sp)\n" +
             "\taddi\tsp, sp, 16\n" +
@@ -491,6 +495,5 @@ public class BuiltinPrinter {
             "\t.addrsig_sym strcmp\n" +
             "\t.addrsig_sym strlen\n" +
             "\t.addrsig_sym strcpy\n" +
-            "\t.addrsig_sym strcat\n" +
-            "\t.addrsig_sym atoi\n";
+            "\t.addrsig_sym strcat\n";
 }
