@@ -53,7 +53,7 @@ public class ArithInstruction extends ASM_Instruction{
         if(rs2 instanceof Imm) printOp += "i";
         res = printOp + "\t" + rd.getName() + ", "+ rs1.getName() + ", ";
         if(rs2 instanceof Imm) res += rs2;
-        else res += rs1.getName();
+        else res += rs2.getName();
         return res;
     }
 }
