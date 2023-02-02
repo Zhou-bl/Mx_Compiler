@@ -64,7 +64,7 @@ main:
 	sw	t0, -52(s0)
 	lw	t0, -8(s0)
 	sw	t0, -56(s0)
-	li	t0, 1
+	li	t0, 4
 	sw	t0, -60(s0)
 	lw	t1, -56(s0)
 	lw	t2, -60(s0)
@@ -129,7 +129,7 @@ global_init_b0:
 	sw	t0, -4(s0)
 	li	t0, 15001
 	sw	t0, -8(s0)
-	li	t0, 1
+	li	t0, 4
 	sw	t0, -12(s0)
 	lw	t1, -8(s0)
 	lw	t2, -12(s0)
