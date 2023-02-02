@@ -1,10 +1,6 @@
 //
 // Created by zbl on 2022/12/10.
 //
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdbool.h>
 int _f_getInt0(){
     int n;
     scanf("%d", &n);
@@ -25,12 +21,12 @@ char *_f_getString0(){
     return str;
 }
 char *_f__malloc0(int mallocSize){ return malloc(mallocSize); }
-bool _f__str_ne0(char* left, char* right){return strcmp(left, right) != 0;}
-bool _f__str_eq0(char* left, char* right){return strcmp(left, right) == 0;}
-bool __f__str_le0(char* left, char* right){return strcmp(left, right) <= 0;}
-bool _f__str_lt0(char* left, char* right){return strcmp(left, right) < 0;}
-bool _f__str_ge0(char* left, char* right){return strcmp(left, right) >= 0;}
-bool _f__str_gt0(char* left, char* right){return strcmp(left, right) > 0;}
+char _f__str_ne0(char* left, char* right){return strcmp(left, right) != 0;}
+char _f__str_eq0(char* left, char* right){return strcmp(left, right) == 0;}
+char __f__str_le0(char* left, char* right){return strcmp(left, right) <= 0;}
+char _f__str_lt0(char* left, char* right){return strcmp(left, right) < 0;}
+char _f__str_ge0(char* left, char* right){return strcmp(left, right) >= 0;}
+char _f__str_gt0(char* left, char* right){return strcmp(left, right) > 0;}
 char* _f__str_splice0(char* str1, char* str2){
     char *splice_str = malloc(sizeof (char) * (strlen(str1) + strlen(str2) + 1));
     strcpy(splice_str, str1);
