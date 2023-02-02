@@ -73,10 +73,10 @@ public class IRBuilder implements ASTVisitor {
             return res;
         }
         if(node instanceof ArrayAccessNode){
-            ((ArrayAccessNode) node).index.accept(this);
-            Value tmpIndex = ((ArrayAccessNode) node).index.IROperand;
             Value tmpPtrAddress = getAddress(((ArrayAccessNode) node).array);//Type**
             Value tmpPtr = new LoadInst(curIRBlock, "array", tmpPtrAddress);//Type*
+            ((ArrayAccessNode) node).index.accept(this);
+            Value tmpIndex = ((ArrayAccessNode) node).index.IROperand;
             GepInst res = new GepInst(curIRBlock, tmpPtr.type, tmpPtr);
             return res.addIndex(tmpIndex);
         }
