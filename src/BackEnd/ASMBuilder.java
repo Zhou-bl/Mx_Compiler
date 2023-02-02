@@ -119,7 +119,7 @@ public class ASMBuilder implements IRVisitor {
         }
         if(node.globalInitList.size() != 0){
             for(IRFunction func : node.globalInitList){
-                if(func.name.equals("_GLOBAL_")) tmp = func;
+                if(func.name.equals("Global_init0")) tmp = func;
             }
             assert tmp != null;
             for(IRFunction func : node.functionArrayList){

@@ -56,6 +56,8 @@ public class Compiler {
             IRBuilder IRbuilder = new IRBuilder(globalScope, module);
             IRbuilder.visit(ASTRoot);
 
+            //output.println(module);
+
             /*
             if(file_output_flag) {
                 byte[] moduleText = module.toString().getBytes();
@@ -66,6 +68,8 @@ public class Compiler {
             */
 
             //module.printAllFunc();
+
+
             ASMBuilder ASMbuilder = new ASMBuilder();
             ASMbuilder.visit(module);
             StackAlloc regAlloc = new StackAlloc(ASMbuilder.targetModule);
@@ -83,7 +87,6 @@ public class Compiler {
             } else {
                 System.out.println(ASMbuilder.targetModule.printCode());
             }
-
 
 
 
