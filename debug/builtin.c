@@ -11,7 +11,7 @@ void _f_println0(char *str){ printf("%s\n", str); }
 void _f_printInt0(int n){ printf("%d", n); }
 void _f_printlnInt0(int n){ printf("%d\n", n); }
 char *_f_toString0(int n){
-    char *str = malloc(12);
+    char *str = malloc(13);
     sprintf(str, "%d", n);
     return str;
 }
@@ -38,7 +38,12 @@ int _class_string_length0(char* str){return strlen(str);}
 int _class_string_ord0(char* str, int pos){return (int)str[pos];}
 int _class_string_parseInt0(char* str){
     //return atoi(str);
-    return sprintf(str,"%d",str);
+    int ans=0,i=0;
+    	while(str[i]!='\0'){
+    		ans=ans*10+str[i]-'0';
+    		i++;
+    	}
+    	return ans;
 }
 char* _class_string_substring0(char* str, int l, int r){
     char *substr = malloc(sizeof (char) * (r - l + 1));

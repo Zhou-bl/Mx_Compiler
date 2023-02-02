@@ -120,7 +120,7 @@ public class BuiltinPrinter {
             "\tsw\ts0, 24(sp)\n" +
             "\taddi\ts0, sp, 32\n" +
             "\tsw\ta0, -12(s0)\n" +
-            "\taddi\ta0, zero, 12\n" +
+            "\taddi\ta0, zero, 13\n" +
             "\tcall\tmalloc\n" +
             "\tsw\ta0, -16(s0)\n" +
             "\tlw\ta0, -16(s0)\n" +
@@ -404,20 +404,43 @@ public class BuiltinPrinter {
             "\t.type\t_class_string_parseInt0,@function\n" +
             "_class_string_parseInt0:                # @_class_string_parseInt0\n" +
             "# %bb.0:\n" +
-            "\taddi\tsp, sp, -16\n" +
-            "\tsw\tra, 12(sp)\n" +
-            "\tsw\ts0, 8(sp)\n" +
-            "\taddi\ts0, sp, 16\n" +
+            "\taddi\tsp, sp, -32\n" +
+            "\tsw\tra, 28(sp)\n" +
+            "\tsw\ts0, 24(sp)\n" +
+            "\taddi\ts0, sp, 32\n" +
             "\tsw\ta0, -12(s0)\n" +
-            "\tlw\ta0, -12(s0)\n" +
-            "\tlui\ta1, %hi(.L.str)\n" +
-            "\taddi\ta1, a1, %lo(.L.str)\n" +
+            "\tmv\ta0, zero\n" +
             "\tsw\ta0, -16(s0)\n" +
-            "\tlw\ta2, -16(s0)\n" +
-            "\tcall\tsprintf\n" +
-            "\tlw\ts0, 8(sp)\n" +
-            "\tlw\tra, 12(sp)\n" +
-            "\taddi\tsp, sp, 16\n" +
+            "\tsw\ta0, -20(s0)\n" +
+            "\tj\t.LBB17_1\n" +
+            ".LBB17_1:                               # =>This Inner Loop Header: Depth=1\n" +
+            "\tlw\ta0, -12(s0)\n" +
+            "\tlw\ta1, -20(s0)\n" +
+            "\tadd\ta0, a0, a1\n" +
+            "\tlbu\ta0, 0(a0)\n" +
+            "\tmv\ta1, zero\n" +
+            "\tbeq\ta0, a1, .LBB17_3\n" +
+            "\tj\t.LBB17_2\n" +
+            ".LBB17_2:                               #   in Loop: Header=BB17_1 Depth=1\n" +
+            "\tlw\ta0, -16(s0)\n" +
+            "\taddi\ta1, zero, 10\n" +
+            "\tmul\ta0, a0, a1\n" +
+            "\tlw\ta1, -12(s0)\n" +
+            "\tlw\ta2, -20(s0)\n" +
+            "\tadd\ta1, a1, a2\n" +
+            "\tlbu\ta1, 0(a1)\n" +
+            "\tadd\ta0, a0, a1\n" +
+            "\taddi\ta0, a0, -48\n" +
+            "\tsw\ta0, -16(s0)\n" +
+            "\tlw\ta0, -20(s0)\n" +
+            "\taddi\ta0, a0, 1\n" +
+            "\tsw\ta0, -20(s0)\n" +
+            "\tj\t.LBB17_1\n" +
+            ".LBB17_3:\n" +
+            "\tlw\ta0, -16(s0)\n" +
+            "\tlw\ts0, 24(sp)\n" +
+            "\tlw\tra, 28(sp)\n" +
+            "\taddi\tsp, sp, 32\n" +
             "\tret\n" +
             ".Lfunc_end17:\n" +
             "\t.size\t_class_string_parseInt0, .Lfunc_end17-_class_string_parseInt0\n" +

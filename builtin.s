@@ -117,7 +117,7 @@ _f_toString0:                           # @_f_toString0
 	sw	s0, 24(sp)
 	addi	s0, sp, 32
 	sw	a0, -12(s0)
-	addi	a0, zero, 12
+	addi	a0, zero, 13
 	call	malloc
 	sw	a0, -16(s0)
 	lw	a0, -16(s0)
@@ -401,20 +401,43 @@ _class_string_ord0:                     # @_class_string_ord0
 	.type	_class_string_parseInt0,@function
 _class_string_parseInt0:                # @_class_string_parseInt0
 # %bb.0:
-	addi	sp, sp, -16
-	sw	ra, 12(sp)
-	sw	s0, 8(sp)
-	addi	s0, sp, 16
+	addi	sp, sp, -32
+	sw	ra, 28(sp)
+	sw	s0, 24(sp)
+	addi	s0, sp, 32
 	sw	a0, -12(s0)
-	lw	a0, -12(s0)
-	lui	a1, %hi(.L.str)
-	addi	a1, a1, %lo(.L.str)
+	mv	a0, zero
 	sw	a0, -16(s0)
-	lw	a2, -16(s0)
-	call	sprintf
-	lw	s0, 8(sp)
-	lw	ra, 12(sp)
-	addi	sp, sp, 16
+	sw	a0, -20(s0)
+	j	.LBB17_1
+.LBB17_1:                               # =>This Inner Loop Header: Depth=1
+	lw	a0, -12(s0)
+	lw	a1, -20(s0)
+	add	a0, a0, a1
+	lbu	a0, 0(a0)
+	mv	a1, zero
+	beq	a0, a1, .LBB17_3
+	j	.LBB17_2
+.LBB17_2:                               #   in Loop: Header=BB17_1 Depth=1
+	lw	a0, -16(s0)
+	addi	a1, zero, 10
+	mul	a0, a0, a1
+	lw	a1, -12(s0)
+	lw	a2, -20(s0)
+	add	a1, a1, a2
+	lbu	a1, 0(a1)
+	add	a0, a0, a1
+	addi	a0, a0, -48
+	sw	a0, -16(s0)
+	lw	a0, -20(s0)
+	addi	a0, a0, 1
+	sw	a0, -20(s0)
+	j	.LBB17_1
+.LBB17_3:
+	lw	a0, -16(s0)
+	lw	s0, 24(sp)
+	lw	ra, 28(sp)
+	addi	sp, sp, 32
 	ret
 .Lfunc_end17:
 	.size	_class_string_parseInt0, .Lfunc_end17-_class_string_parseInt0
