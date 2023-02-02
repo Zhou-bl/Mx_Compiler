@@ -21,8 +21,7 @@ public class ASMFunction extends BasicOperand {
         blockArrayList = new ArrayList<>();
         arguments = new ArrayList<>();
         calleeSaved = new ArrayList<>();
-        stackSize = 4;
-        //initialize 4 bytes for s0
+        stackSize = 0;
         virtualIndex = 0;
     }
 

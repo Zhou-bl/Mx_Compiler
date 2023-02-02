@@ -60,12 +60,14 @@ public class Compiler {
 
             /*
             if(file_output_flag) {
-                byte[] moduleText = module.toString().getBytes();
-                //fos.write(moduleText);
+                output = new PrintStream("output.ll");
+                output.println(module);
             } else {
                 output.println(module);//print ir
             }
-            */
+
+             */
+
 
             //module.printAllFunc();
 
