@@ -131,6 +131,7 @@ public class ASMBuilder implements IRVisitor {
         node.functionArrayList.forEach(func -> func.accept(this));
     }
 
+    /*
     @Override
     public void visit(IRFunction node){
         if(node.isBuiltin) return;
@@ -154,6 +155,20 @@ public class ASMBuilder implements IRVisitor {
         }
         //恢复ra寄存器
         new MoveInstruction(curBlock).addOperand(new VirtualRegister(curFunction.virtualIndex++, 1), virtualRa);
+    }
+    */
+
+    @Override
+    public void visit(IRFunction node){
+        if(node.isBuiltin ) return;
+        curFunction = (ASMFunction) node.ASMOperand;
+        curBlock = curFunction.getEntryBlock();
+        new MoveInstruction(curBlock).addOperand(new VirtualRegister(curFunction.virtualIndex++, 9),new VirtualRegister(curFunction.virtualIndex++, 8));
+        Register tmpReg = new VirtualRegister(curFunction.virtualIndex++);
+        new MoveInstruction(curBlock).addOperand(tmpReg, new VirtualRegister(curFunction.virtualIndex++, 9));
+        node.basicBlockArrayList.forEach(ele -> ele.accept(this));
+        curBlock = curFunction.getExitBlock();
+        new MoveInstruction(curBlock).addOperand(new VirtualRegister(curFunction.virtualIndex++, 8), tmpReg);
     }
 
     @Override
@@ -277,6 +292,7 @@ public class ASMBuilder implements IRVisitor {
         }
     }
 
+    /*
     @Override
     public void visit(CallInst node){
         ASMFunction targetFunc = (ASMFunction) node.operands.get(0).ASMOperand;
@@ -304,6 +320,45 @@ public class ASMBuilder implements IRVisitor {
             new StoreInstruction(curBlock, "sw").addOperand(curArgReg, new VirtualRegister(curFunction.virtualIndex++, 2, targetFunc.arguments.get(i).offset));
         }
         new CallInstruction(curBlock).addOperand(targetFunc);
+        //处理返回值:
+        if(!(node.type instanceof VoidType)){
+            Register resValueReg = new VirtualRegister(curFunction.virtualIndex++);
+            new MoveInstruction(curBlock).addOperand(resValueReg, new VirtualRegister(curFunction.virtualIndex++, 10));
+            node.ASMOperand = resValueReg;
+        }
+    }
+
+     */
+    @Override
+    public void visit(CallInst node){
+        ASMFunction targetFunc = (ASMFunction) node.operands.get(0).ASMOperand;
+        node.operands.forEach(this::recurDown);
+        for(int i = 0; i <= 7 && i < node.operands.size() - 1; ++i){
+            BasicOperand src = node.getOperand(i + 1).ASMOperand;
+            if(src instanceof Imm){
+                new LiInstruction(curBlock).addOperand(targetFunc.arguments.get(i), src);
+            } else {
+                new MoveInstruction(curBlock).addOperand(targetFunc.arguments.get(i), src);
+            }
+        }
+        for(int i = 8; i < node.operands.size() - 1; ++i){
+            //将参数暂时放到内存中:
+            BasicOperand src = node.getOperand(i + 1).ASMOperand;
+            Register curArgReg = null;
+            if(src instanceof Imm){
+                //立即数作为参数,先load imm 再store到内存中:
+                curArgReg = new VirtualRegister(curFunction.virtualIndex);
+                new LiInstruction(curBlock).addOperand(curArgReg, src);
+            } else {
+                //src instance of register:
+                curArgReg = (Register) src;
+            }
+            new StoreInstruction(curBlock,"sw").addOperand(curArgReg,new VirtualRegister(curFunction.virtualIndex++, 2, targetFunc.arguments.get(i).offset.getReverse()));
+        }
+        Register backReg = new VirtualRegister(curFunction.virtualIndex++);
+        new MoveInstruction(curBlock).addOperand(backReg,new VirtualRegister(curFunction.virtualIndex++, 1));
+        new CallInstruction(curBlock).addOperand(targetFunc);
+        new MoveInstruction(curBlock).addOperand(new VirtualRegister(curFunction.virtualIndex++, 1),backReg);
         //处理返回值:
         if(!(node.type instanceof VoidType)){
             Register resValueReg = new VirtualRegister(curFunction.virtualIndex++);
