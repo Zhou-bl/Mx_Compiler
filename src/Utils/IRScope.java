@@ -11,6 +11,7 @@ public class IRScope {
     public HashMap<String, Value> valueTable;
     public boolean isValid;
 
+    /*
     private void initValid(){
         if(this.parentScope == null){
             this.isValid = true;
@@ -18,12 +19,14 @@ public class IRScope {
             this.isValid = this.parentScope.isValid;
         }
     }
+    */
+
 
     public IRScope(IRScope _para, scopeType _type){
         this.parentScope = _para;
         this.type = _type;
         this.valueTable = new HashMap<>();
-        initValid();
+        //initValid();
     }
 
     public Value getValue(String _id){

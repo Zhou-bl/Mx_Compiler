@@ -1,4 +1,5 @@
 import BackEnd.ASMBuilder;
+import BackEnd.RegAlloc.GraphColor;
 import BackEnd.RegAlloc.StackAlloc;
 import FrontEnd.Semantic.AST_Node.ASTBuilder;
 import FrontEnd.Semantic.AST_Node.RootNode;
@@ -58,7 +59,7 @@ public class Compiler {
 
             //output.println(module);
 
-            /*
+
             if(file_output_flag) {
                 output = new PrintStream("output.ll");
                 output.println(module);
@@ -66,7 +67,7 @@ public class Compiler {
                 output.println(module);//print ir
             }
 
-             */
+
 
 
             //module.printAllFunc();
@@ -74,9 +75,7 @@ public class Compiler {
 
             ASMBuilder ASMbuilder = new ASMBuilder();
             ASMbuilder.visit(module);
-            StackAlloc regAlloc = new StackAlloc(ASMbuilder.targetModule);
-            regAlloc.process();
-
+            GraphColor regAlloc = new GraphColor(ASMbuilder.targetModule);
 
 
             if(file_output_flag) {

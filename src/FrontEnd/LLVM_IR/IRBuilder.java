@@ -48,7 +48,7 @@ public class IRBuilder implements ASTVisitor {
     private Value getStringConstPtr(Value _value){
         //targetIRType应该是指向char的一个指针类型:
         GepInst ptr = new GepInst(curIRBlock, new PointerType(new IntegerType(8)), _value);
-        ptr.addIndex(new IntConstant(0)).addIndex(new IntConstant(0));
+        ptr.addGepOperand(new IntConstant(0)).addGepOperand(new IntConstant(0));
         return ptr;
     }
 
@@ -57,10 +57,12 @@ public class IRBuilder implements ASTVisitor {
             String id = ((IdentifierExprNode) node).identifier;
             Value resValue = curScope.getValue(id);
             if(curScope.isClassId(id)){
+                //如果是在class里面，先把this指针load出来:
                 Value ptr = curScope.getValue("_this");
                 ptr = new LoadInst(curIRBlock, "_this", ptr);
+                //再用gep指令得到成员变量的地址:
                 resValue = new GepInst(curIRBlock, new PointerType(curClass.typeTable.get(id)), ptr);
-                ((GepInst) resValue).addIndex(new IntConstant(0)).addIndex(new IntConstant(curClass.indexTable.get(id)));
+                ((GepInst) resValue).addGepOperand(new IntConstant(0)).addGepOperand(new IntConstant(curClass.indexTable.get(id)));
             }
             return resValue;
         }
@@ -69,7 +71,7 @@ public class IRBuilder implements ASTVisitor {
             Value baseAddress = ((ObjectPortionExprNode) node).baseObject.IROperand;
             StructType baseType = (StructType) baseAddress.type.deReference();
             GepInst res = new GepInst(curIRBlock, new PointerType((baseType.typeTable.get(((ObjectPortionExprNode) node).member))), baseAddress);
-            res.addIndex(new IntConstant(0)).addIndex(new IntConstant(baseType.indexTable.get(((ObjectPortionExprNode) node).member)));
+            res.addGepOperand(new IntConstant(0)).addGepOperand(new IntConstant(baseType.indexTable.get(((ObjectPortionExprNode) node).member)));
             return res;
         }
         if(node instanceof ArrayAccessNode){
@@ -78,7 +80,7 @@ public class IRBuilder implements ASTVisitor {
             ((ArrayAccessNode) node).index.accept(this);
             Value tmpIndex = ((ArrayAccessNode) node).index.IROperand;
             GepInst res = new GepInst(curIRBlock, tmpPtr.type, tmpPtr);
-            return res.addIndex(tmpIndex);
+            return res.addGepOperand(tmpIndex);
         }
         if(node instanceof MonocularOpExprNode){
             return getAddress(((MonocularOpExprNode) node).operand);
@@ -251,7 +253,7 @@ public class IRBuilder implements ASTVisitor {
     private Value doArraySize(Value _address){
         Value tmpPtr = new BitcastInst(curIRBlock, _address, new PointerType(new IntegerType(32)));
         GepInst tmp = new GepInst(curIRBlock, new PointerType(new IntegerType(32)), tmpPtr);
-        tmp.addIndex(new IntConstant(-1));
+        tmp.addGepOperand(new IntConstant(-1));
         return new LoadInst(curIRBlock, "array_size", tmp);
     }
 
@@ -268,7 +270,7 @@ public class IRBuilder implements ASTVisitor {
         Value mallocPointer = heapAlloca(new PointerType(new IntegerType(32)), mallocByteSize);
         new StoreInst(curIRBlock, curSizeValue, mallocPointer);//存放size的value;
         //+1的offset之后的指针:
-        GepInst arrayPointer = new GepInst(curIRBlock, new PointerType(new IntegerType(32)), mallocPointer).addIndex(new IntConstant(1));
+        GepInst arrayPointer = new GepInst(curIRBlock, new PointerType(new IntegerType(32)), mallocPointer).addGepOperand(new IntConstant(1));
         BitcastInst res = new BitcastInst(curIRBlock, arrayPointer, _malloc_type);
         if(arrayAllocSizeStack.empty()) return res;
         //写一个循环来为每一个维数组malloc空间:
@@ -281,7 +283,7 @@ public class IRBuilder implements ASTVisitor {
         LoadInst iter_value = new LoadInst(curIRBlock, "alloc_iter_value", iter_ptr);
         IcmpInst jumpFlag = new IcmpInst(curIRBlock, BinaryInst.IRBinaryOpType.ne, iter_value, curSizeValue);
         new BranchInst(curIRBlock, jumpFlag, allocBodyBlock, allocTerminalBlock); curIRBlock = allocBodyBlock;
-        GepInst cur_ptr = new GepInst(curIRBlock, _malloc_type, res).addIndex(iter_value);
+        GepInst cur_ptr = new GepInst(curIRBlock, _malloc_type, res).addGepOperand(iter_value);
         new StoreInst(curIRBlock, doArrayAlloc(mallocType), cur_ptr);
         BinaryInst iterValue_plus_1 = new BinaryInst(curIRBlock, BinaryInst.IRBinaryOpType.add, new IntConstant(1), iter_value);
         new StoreInst(curIRBlock, iterValue_plus_1, iter_ptr);
@@ -702,7 +704,7 @@ public class IRBuilder implements ASTVisitor {
         Value baseAddress = node.baseObject.IROperand;
         StructType baseType = (StructType) baseAddress.type.deReference();
         GepInst nodeOperand = new GepInst(curIRBlock, new PointerType(baseType.typeTable.get(node.member)), baseAddress);
-        nodeOperand.addIndex(new IntConstant(0)).addIndex(new IntConstant(baseType.indexTable.get(node.member)));
+        nodeOperand.addGepOperand(new IntConstant(0)).addGepOperand(new IntConstant(baseType.indexTable.get(node.member)));
         node.IROperand = new LoadInst(curIRBlock, node.member, nodeOperand);
     }
 

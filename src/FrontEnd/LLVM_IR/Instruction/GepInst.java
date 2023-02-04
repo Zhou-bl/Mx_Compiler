@@ -12,7 +12,7 @@ public class GepInst extends IRInstruction{
         this.addOperand(_targetPointer);
     }
 
-    public GepInst addIndex(Value _value){
+    public GepInst addGepOperand(Value _value){
         this.addOperand(_value);
         return this;
     }

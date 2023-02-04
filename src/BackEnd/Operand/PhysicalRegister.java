@@ -2,6 +2,7 @@ package BackEnd.Operand;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 
 public class PhysicalRegister extends Register {
     public static final ArrayList<String> regName = new ArrayList<>(Arrays.asList("zero", "ra", "sp", "gp", "tp",
@@ -11,10 +12,13 @@ public class PhysicalRegister extends Register {
     public static final ArrayList<String> callerSavedRegName = new ArrayList<>(Arrays.asList("ra",
             "t0", "t1", "t2", "a0", "a1", "a2", "a3", "a4", "a5", "a6", "a7", "t3", "t4", "t5", "t6"));
 
+
     public static final ArrayList<Integer> calleeSavedIndex = new ArrayList<>(Arrays.asList(
             9,
             18,19,20,21,22,23,24,25,26,27
     ));
+
+    public static final HashSet<Integer> callerSaved_check = new HashSet<>(calleeSavedIndex);
 
     public static final ArrayList<PhysicalRegister> callerSavedReg = new ArrayList<>(){
         {
