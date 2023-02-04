@@ -1,5 +1,6 @@
 import BackEnd.ASMBuilder;
 import BackEnd.RegAlloc.GraphColor;
+import BackEnd.RegAlloc.GraphColor1;
 import BackEnd.RegAlloc.StackAlloc;
 import FrontEnd.Semantic.AST_Node.ASTBuilder;
 import FrontEnd.Semantic.AST_Node.RootNode;
@@ -75,13 +76,13 @@ public class Compiler {
 
             ASMBuilder ASMbuilder = new ASMBuilder();
             ASMbuilder.visit(module);
-            GraphColor regAlloc = new GraphColor(ASMbuilder.targetModule);
+            GraphColor1 regAlloc = new GraphColor1(ASMbuilder.targetModule);
 
 
             if(file_output_flag) {
                 //文件输出:
                 output = new PrintStream("output.s");
-                output.println(regAlloc.targetModule.printCode());
+                output.println(regAlloc.ripe.printCode());
                 BuiltinPrinter builtinPrinter = new BuiltinPrinter();
                 output = new PrintStream("builtin.s");
                 output.println(builtinPrinter.builtinCode);

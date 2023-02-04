@@ -131,18 +131,29 @@ public class ASMBuilder implements IRVisitor {
         node.functionArrayList.forEach(func -> func.accept(this));
     }
 
-
     @Override
     public void visit(IRFunction node){
-        if(node.isBuiltin ) return;
+        if(node.isBuiltin) return;
         curFunction = (ASMFunction) node.ASMOperand;
         curBlock = curFunction.getEntryBlock();
-        new MoveInstruction(curBlock).addOperand(new VirtualRegister(curFunction.virtualIndex++, 9),new VirtualRegister(curFunction.virtualIndex++, 8));
-        Register tmpReg = new VirtualRegister(curFunction.virtualIndex++);
-        new MoveInstruction(curBlock).addOperand(tmpReg, new VirtualRegister(curFunction.virtualIndex++, 9));
+        //first save return address in "ra" register
+        VirtualRegister virtualRa = new VirtualRegister(curFunction.virtualIndex++);
+        new MoveInstruction(curBlock).addOperand(virtualRa, new VirtualRegister(curFunction.virtualIndex++, 1));
+        PhysicalRegister.calleeSavedIndex.forEach(index -> {
+            //记录下所有calleeSaved寄存器的值，并在exitBlock中恢复这些值.
+            VirtualRegister tmp = new VirtualRegister(curFunction.virtualIndex++);
+            curFunction.calleeSaved.add(tmp);
+            new MoveInstruction(curBlock).addOperand(tmp, new VirtualRegister(curFunction.virtualIndex++, index));
+        });
         node.basicBlockArrayList.forEach(ele -> ele.accept(this));
         curBlock = curFunction.getExitBlock();
-        new MoveInstruction(curBlock).addOperand(new VirtualRegister(curFunction.virtualIndex++, 8), tmpReg);
+        for(int i = 0; i < curFunction.calleeSaved.size(); ++i){
+            //恢复calleeSave寄存器的值
+            VirtualRegister reg = curFunction.calleeSaved.get(i);
+            new MoveInstruction(curBlock).addOperand(new VirtualRegister(curFunction.virtualIndex++, PhysicalRegister.calleeSavedIndex.get(i)) , reg);
+        }
+        //恢复ra寄存器
+        new MoveInstruction(curBlock).addOperand(new VirtualRegister(curFunction.virtualIndex++, 1), virtualRa);
     }
 
     @Override
@@ -290,12 +301,9 @@ public class ASMBuilder implements IRVisitor {
                 //src instance of register:
                 curArgReg = (Register) src;
             }
-            new StoreInstruction(curBlock,"sw").addOperand(curArgReg,new VirtualRegister(curFunction.virtualIndex++, 2, targetFunc.arguments.get(i).offset.getReverse()));
+            new StoreInstruction(curBlock, "sw").addOperand(curArgReg, new VirtualRegister(curFunction.virtualIndex++, 2, targetFunc.arguments.get(i).offset));
         }
-        Register backReg = new VirtualRegister(curFunction.virtualIndex++);
-        new MoveInstruction(curBlock).addOperand(backReg,new VirtualRegister(curFunction.virtualIndex++, 1));
         new CallInstruction(curBlock).addOperand(targetFunc);
-        new MoveInstruction(curBlock).addOperand(new VirtualRegister(curFunction.virtualIndex++, 1),backReg);
         //处理返回值:
         if(!(node.type instanceof VoidType)){
             Register resValueReg = new VirtualRegister(curFunction.virtualIndex++);
